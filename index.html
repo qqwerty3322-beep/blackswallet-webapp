@@ -48,13 +48,14 @@ body {
   inset: 0;
   background: var(--bg);
   z-index: 500;
-  align-items: center;
-  justify-content: center;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
-.auth-screen.active { display: flex; }
+.auth-screen.active { display: block; }
 
 .auth-bg {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background:
     radial-gradient(ellipse 70% 55% at 15% 15%, rgba(124,58,237,0.2) 0%, transparent 60%),
@@ -85,6 +86,12 @@ body {
   width: 100%;
   max-width: 460px;
   padding: 20px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 .auth-card {
@@ -873,27 +880,31 @@ body {
 .portfolio-header {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 28px;
+  gap: 10px;
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .portfolio-stat-card {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 24px;
+  padding: 16px 12px;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
-.portfolio-stat-card .label { font-size: 12px; color: var(--text3); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
-.portfolio-stat-card .value { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
-.portfolio-stat-card .change { font-size: 13px; font-family: 'Inter', sans-serif; margin-top: 6px; }
+.portfolio-stat-card .label { font-size: 10px; color: var(--text3); font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.portfolio-stat-card .value { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.portfolio-stat-card .change { font-size: 12px; font-family: 'Inter', sans-serif; margin-top: 4px; }
 .change.up { color: var(--green); }
 .change.down { color: var(--red); }
 
 .portfolio-body {
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 20px;
+  grid-template-columns: 1fr;
+  gap: 14px;
 }
 
 .chart-card {
@@ -1334,12 +1345,14 @@ body {
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 .markets-table-head {
   display: grid;
-  grid-template-columns: 32px 2fr 1.3fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 28px 1fr 90px 70px;
   gap: 0;
-  padding: 11px 20px;
+  padding: 10px 14px;
   border-bottom: 1px solid var(--border);
   font-size: 10px;
   font-weight: 700;
@@ -1355,9 +1368,9 @@ body {
 
 .mkt-row {
   display: grid;
-  grid-template-columns: 32px 2fr 1.3fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 28px 1fr 90px 70px;
   gap: 0;
-  padding: 13px 20px;
+  padding: 11px 14px;
   border-bottom: 1px solid var(--border);
   align-items: center;
   cursor: pointer;
@@ -1653,23 +1666,44 @@ body {
               var(--bg3);
   border: 1px solid var(--border);
   border-radius: 24px;
-  padding: 36px 40px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.ref-hero-title { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
+.ref-hero-sub { font-size: 13px; color: var(--text2); line-height: 1.6; max-width: 100%; }
+.ref-hero-status {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 32px;
-  margin-bottom: 20px;
+  gap: 12px;
 }
-.ref-hero-title { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
-.ref-hero-sub { font-size: 14px; color: var(--text2); line-height: 1.6; max-width: 360px; }
-.ref-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+.ref-hero-status-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--text3); white-space: nowrap;
+}
+#refStatusBadge {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  padding: 8px 14px !important;
+  border-radius: 10px !important;
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  white-space: nowrap !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+.ref-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 16px; width: 100%; box-sizing: border-box; }
 .ref-stat-card {
-  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
-  padding: 20px; text-align: center;
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px 10px; text-align: center; min-width: 0; box-sizing: border-box;
 }
-.ref-stat-val { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
-.ref-stat-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); margin-top: 4px; }
-.ref-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 24px 28px; margin-bottom: 16px; }
+.ref-stat-val { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ref-stat-label { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text3); margin-top: 4px; }
+.ref-card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px 16px; margin-bottom: 12px; width: 100%; box-sizing: border-box; }
 .ref-card-title { font-size: 16px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
 .promo-display {
   background: var(--bg3); border: 1.5px dashed rgba(124,58,237,0.4); border-radius: 14px;
@@ -1803,14 +1837,7 @@ html, body {
 .portfolio-body           { grid-template-columns: 1fr !important; }
 .settings-grid            { grid-template-columns: 1fr !important; }
 
-/* ── Markets table: compact 3-column on mobile ── */
-.markets-table-head,
-.mkt-row {
-  grid-template-columns: 24px 1fr 80px 70px !important;
-}
-/* hide mcap, vol, high, low on mobile */
-.mkt-mcap, .mkt-vol, .mkt-high, .mkt-low, .mkt-spark { display: none !important; }
-.markets-table-body { max-height: calc(100dvh - 240px); }
+/* ── Markets table: already handled in base CSS ── */
 
 /* ── Modals: bottom sheet style ── */
 .modal-overlay { align-items: flex-end !important; padding: 0 !important; }
@@ -2529,10 +2556,10 @@ html, body {
         <div>
           <div class="ref-hero-title">🤝 Invite friends to BlackS</div>
           <div class="ref-hero-sub">Share your promo code with friends. Each of you gets a bonus when they join. One code per account — one activation per account.</div>
-        </div>
-        <div style="text-align:center;flex-shrink:0">
-          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Your Status</div>
-          <div id="refStatusBadge" style="font-size:14px;font-weight:800;padding:10px 20px;border-radius:12px;background:var(--card);border:1px solid var(--border)">—</div>
+          <div class="ref-hero-status">
+            <div class="ref-hero-status-label">Your Status</div>
+            <div id="refStatusBadge">—</div>
+          </div>
         </div>
       </div>
 
