@@ -996,7 +996,7 @@ body {
   padding: 14px 16px;
   color: var(--text);
   font-family: 'Inter', sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -1812,6 +1812,9 @@ body {
 }
 #tokenPickerModal.open { display: flex; }
    ════════════════════════════════════════ */
+
+/* ── Prevent iOS autozoom on ALL inputs ── */
+input, textarea, select { font-size: 16px !important; }
 
 /* ════════════════════════════════════════
    TELEGRAM WEB APP — MOBILE OVERRIDES
