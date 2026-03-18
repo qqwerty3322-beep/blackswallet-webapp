@@ -1237,11 +1237,24 @@ body {
 /* ─── MARKETS PAGE ─── */
 .markets-header {
   display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.markets-header-top {
+  display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
-  gap: 16px;
+  gap: 8px;
   flex-wrap: wrap;
+}
+.markets-header-bottom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
 }
 
 .markets-tabs {
@@ -1278,7 +1291,9 @@ body {
   border-radius: 10px;
   padding: 8px 14px;
   flex: 1;
-  max-width: 260px;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .markets-search input {
   background: none;
@@ -1314,15 +1329,19 @@ body {
 /* Summary bar */
 .markets-summary {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
 }
 .mkt-summary-card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px 18px;
+  border-radius: 12px;
+  padding: 12px 14px;
+  min-width: 0;
+  box-sizing: border-box;
 }
 .mkt-summary-label {
   font-size: 10px;
@@ -1333,10 +1352,13 @@ body {
   margin-bottom: 6px;
 }
 .mkt-summary-value {
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 800;
   font-family: 'Inter', sans-serif;
   letter-spacing: -0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Table */
@@ -2747,14 +2769,14 @@ html, body {
     <!-- MARKETS PAGE -->
     <div class="page" id="page-markets">
       <div class="markets-header">
-        <div style="display:flex;align-items:center;gap:16px">
+        <div class="markets-header-top">
           <div class="page-title" style="margin-bottom:0">Markets</div>
           <div class="markets-refresh">
             <div class="markets-refresh-dot"></div>
             <span id="mktsLastUpdate">Loading...</span>
           </div>
         </div>
-        <div style="display:flex;align-items:center;gap:10px">
+        <div class="markets-header-bottom">
           <div class="markets-search">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" id="mktsSearch" placeholder="Search coin..." oninput="filterMarkets()">
@@ -2788,20 +2810,15 @@ html, body {
       </div>
 
       <!-- Table -->
-      <div class="markets-table-wrap">
-        <div class="markets-table-head">
-          <div class="mkt-th" style="justify-content:center">#</div>
-          <div class="mkt-th" onclick="sortMarkets('name')">Name</div>
-          <div class="mkt-th right" onclick="sortMarkets('price')">Price</div>
-          <div class="mkt-th right" onclick="sortMarkets('change')">24h %</div>
-          <div class="mkt-th right mkt-mcap" onclick="sortMarkets('mcap')">Market Cap</div>
-          <div class="mkt-th right mkt-vol" onclick="sortMarkets('vol')">Volume 24h</div>
-          <div class="mkt-th right mkt-spark">7d Chart</div>
-        </div>
+      <div class="markets-table-wrap" id="mktsTableWrap">
         <div class="markets-table-body" id="mktsTableBody">
           <!-- Skeleton rows while loading -->
           <div style="padding:16px 20px;display:flex;flex-direction:column;gap:14px">
-            ${Array(8).fill(0).map(() => `<div class="mkt-skeleton" style="width:${60+Math.random()*30|0}%"></div>`).join('')}
+            <div class="mkt-skeleton" style="width:80%"></div>
+            <div class="mkt-skeleton" style="width:65%"></div>
+            <div class="mkt-skeleton" style="width:75%"></div>
+            <div class="mkt-skeleton" style="width:60%"></div>
+            <div class="mkt-skeleton" style="width:70%"></div>
           </div>
         </div>
       </div>
@@ -3183,21 +3200,22 @@ html, body {
 </div>
 
 <!-- TOKEN PICKER MODAL -->
-<div class="modal-overlay" id="tokenPickerModal">
-  <div class="modal" style="max-width:420px;padding:24px">
+<div class="modal-overlay" id="tokenPickerModal" style="align-items:flex-start!important;padding-top:0!important">
+  <div class="modal" style="max-width:100%;width:100%;padding:20px 16px;border-radius:20px 20px 0 0;position:fixed;bottom:0;left:0;right:0;margin:0;max-height:75dvh;display:flex;flex-direction:column;">
     <button class="modal-close" onclick="closeModal('tokenPickerModal')">×</button>
     <div class="modal-title">Select Token</div>
 
     <!-- Search -->
-    <div style="position:relative;margin:16px 0 12px">
+    <div style="position:relative;margin:12px 0 10px;flex-shrink:0">
       <input id="tokenPickerSearch" type="text" placeholder="Search crypto or currency..."
         oninput="renderTokenPicker()"
-        style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:11px 14px 11px 38px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none">
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+        style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:11px 14px 11px 38px;color:var(--text);font-family:'Inter',sans-serif;font-size:16px;outline:none;box-sizing:border-box">
       <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5c5d75" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </div>
 
     <!-- Tabs -->
-    <div style="display:flex;gap:4px;background:var(--bg3);border-radius:10px;padding:3px;margin-bottom:12px">
+    <div style="display:flex;gap:4px;background:var(--bg3);border-radius:10px;padding:3px;margin-bottom:10px;flex-shrink:0">
       <button id="tpTabCrypto" onclick="setTokenPickerTab('crypto')"
         style="flex:1;padding:7px;border-radius:8px;border:none;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,rgba(224,64,251,0.2),rgba(124,58,237,0.2));color:var(--text);transition:all 0.2s">Crypto</button>
       <button id="tpTabFiat" onclick="setTokenPickerTab('fiat')"
@@ -3206,7 +3224,7 @@ html, body {
         style="flex:1;padding:7px;border-radius:8px;border:none;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--text3);transition:all 0.2s">Stable</button>
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:4px;max-height:380px;overflow-y:auto" id="tokenPickerList"></div>
+    <div style="display:flex;flex-direction:column;gap:4px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch" id="tokenPickerList"></div>
   </div>
 </div>
 
@@ -5420,10 +5438,15 @@ function renderCryptoTable(coins) {
     return;
   }
 
-  body.innerHTML = filtered.map((c, i) => {
+  body.innerHTML = `
+    <div class="markets-table-head" style="border-bottom:1px solid var(--border)">
+      <div class="mkt-th" style="justify-content:center">#</div>
+      <div class="mkt-th">Name</div>
+      <div class="mkt-th right">Price</div>
+      <div class="mkt-th right">24h %</div>
+    </div>` + filtered.map((c, i) => {
     const chg  = c.price_change_percentage_24h;
     const isUp = chg >= 0;
-    const spark = sparklineSVG(c.sparkline_in_7d?.price, isUp);
     return `
       <div class="mkt-row" onclick="showToast('${c.name}: ${fmtPrice(c.current_price)}')">
         <div class="mkt-rank">${c.market_cap_rank || i+1}</div>
@@ -5436,9 +5459,6 @@ function renderCryptoTable(coins) {
         </div>
         <div class="mkt-price">${fmtPrice(c.current_price)}</div>
         <div class="mkt-change ${isUp?'up':'down'}">${fmtPct(chg)}</div>
-        <div class="mkt-mcap">${fmtLargeNum(c.market_cap)}</div>
-        <div class="mkt-vol">${fmtLargeNum(c.total_volume)}</div>
-        <div class="mkt-spark">${spark}</div>
       </div>`;
   }).join('');
 }
@@ -5468,25 +5488,19 @@ function renderForexTable() {
   );
 
   body.innerHTML = `
-    <div class="markets-table-head" style="grid-template-columns:32px 2fr 1.5fr 1fr 1fr 1fr 1fr;border-bottom:1px solid var(--border)">
+    <div class="markets-table-head" style="border-bottom:1px solid var(--border)">
       <div class="mkt-th" style="justify-content:center">#</div>
       <div class="mkt-th">Pair</div>
       <div class="mkt-th right">Rate</div>
-      <div class="mkt-th right">24h Change</div>
-      <div class="mkt-th right">Bid</div>
-      <div class="mkt-th right">Ask</div>
-      <div class="mkt-th right">Spread</div>
+      <div class="mkt-th right">24h %</div>
     </div>
     ${filtered.map((p, i) => {
       const isUp = (p.change || 0) >= 0;
-      const spread = p.rate ? (p.rate * 0.0002).toFixed(p.rate > 100 ? 2 : 4) : '—';
-      const bid    = p.rate ? (p.rate * 0.9999).toFixed(p.rate > 100 ? 2 : 4) : '—';
-      const ask    = p.rate ? (p.rate * 1.0001).toFixed(p.rate > 100 ? 2 : 4) : '—';
       return `
-        <div class="mkt-row" style="grid-template-columns:32px 2fr 1.5fr 1fr 1fr 1fr 1fr" onclick="showToast('${p.base}/${p.quote}: ${p.rate?.toFixed(4) || '—'}')">
+        <div class="mkt-row" onclick="showToast('${p.base}/${p.quote}: ${p.rate?.toFixed(4) || '—'}')">
           <div class="mkt-rank">${i+1}</div>
           <div class="mkt-coin">
-            <div style="width:32px;height:32px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--text2)">${p.base.substring(0,2)}</div>
+            <div style="width:32px;height:32px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--text2);flex-shrink:0">${p.base.substring(0,2)}</div>
             <div>
               <div class="mkt-coin-name">${p.base}/${p.quote}</div>
               <div class="mkt-coin-ticker">${p.base === 'BTC' || p.base === 'ETH' ? 'Crypto/Fiat' : 'Forex'}</div>
@@ -5494,9 +5508,6 @@ function renderForexTable() {
           </div>
           <div class="mkt-price">${p.rate ? (p.rate > 100 ? p.rate.toFixed(2) : p.rate.toFixed(4)) : '—'}</div>
           <div class="mkt-change ${isUp?'up':'down'}">${fmtPct(p.change)}</div>
-          <div class="mkt-mcap">${bid}</div>
-          <div class="mkt-vol">${ask}</div>
-          <div class="mkt-mcap">${spread}</div>
         </div>`;
     }).join('')}`;
 }
@@ -5856,6 +5867,12 @@ window.addEventListener('load', async () => {
     tg.onEvent('viewportChanged', () => {
       const nav = document.getElementById('bottomNav');
       if (nav) nav.style.display = tg.isExpanded ? 'flex' : 'none';
+      // Resize token picker list when keyboard appears
+      const pickerModal = document.getElementById('tokenPickerModal');
+      if (pickerModal && pickerModal.classList.contains('open')) {
+        const modal = pickerModal.querySelector('.modal');
+        if (modal) modal.style.maxHeight = Math.min(tg.viewportHeight * 0.75, window.innerHeight * 0.75) + 'px';
+      }
     });
   }
 
