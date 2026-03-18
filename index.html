@@ -1798,11 +1798,22 @@ body {
 }
 .page-title span { color: var(--pink); }
 
-/* ════════════════════════════════════════
-   TELEGRAM WEB APP — MOBILE OVERRIDES
+/* Token picker fullscreen override */
+#tokenPickerModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: transparent;
+  align-items: unset;
+  justify-content: unset;
+  backdrop-filter: none;
+}
+#tokenPickerModal.open { display: block; }
    ════════════════════════════════════════ */
 
-/* ── Prevent ANY horizontal scroll on the entire page ── */
+/* ════════════════════════════════════════
+   TELEGRAM WEB APP — MOBILE OVERRIDES
 html, body {
   overflow-x: hidden !important;
   overscroll-behavior-x: none;
@@ -3200,13 +3211,26 @@ html, body {
 </div>
 
 <!-- TOKEN PICKER MODAL -->
-<div class="modal-overlay" id="tokenPickerModal" style="align-items:flex-start!important;padding-top:0!important">
-  <div class="modal" style="max-width:100%;width:100%;padding:20px 16px;border-radius:20px 20px 0 0;position:fixed;bottom:0;left:0;right:0;margin:0;max-height:75dvh;display:flex;flex-direction:column;">
-    <button class="modal-close" onclick="closeModal('tokenPickerModal')">×</button>
-    <div class="modal-title">Select Token</div>
+<div class="modal-overlay" id="tokenPickerModal">
+  <div style="
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg2);
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    box-sizing: border-box;
+    overflow: hidden;
+  ">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-shrink:0">
+      <div class="modal-title" style="margin:0">Select Token</div>
+      <button class="modal-close" style="position:static" onclick="closeModal('tokenPickerModal')">×</button>
+    </div>
 
     <!-- Search -->
-    <div style="position:relative;margin:12px 0 10px;flex-shrink:0">
+    <div style="position:relative;margin-bottom:10px;flex-shrink:0">
       <input id="tokenPickerSearch" type="text" placeholder="Search crypto or currency..."
         oninput="renderTokenPicker()"
         autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
@@ -3215,7 +3239,7 @@ html, body {
     </div>
 
     <!-- Tabs -->
-    <div style="display:flex;gap:4px;background:var(--bg3);border-radius:10px;padding:3px;margin-bottom:10px;flex-shrink:0">
+    <div style="display:flex;gap:4px;background:var(--bg3);border-radius:10px;padding:3px;margin-bottom:12px;flex-shrink:0">
       <button id="tpTabCrypto" onclick="setTokenPickerTab('crypto')"
         style="flex:1;padding:7px;border-radius:8px;border:none;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,rgba(224,64,251,0.2),rgba(124,58,237,0.2));color:var(--text);transition:all 0.2s">Crypto</button>
       <button id="tpTabFiat" onclick="setTokenPickerTab('fiat')"
@@ -3224,7 +3248,8 @@ html, body {
         style="flex:1;padding:7px;border-radius:8px;border:none;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--text3);transition:all 0.2s">Stable</button>
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:4px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch" id="tokenPickerList"></div>
+    <!-- List: takes remaining space, scrolls -->
+    <div id="tokenPickerList" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:4px;min-height:0"></div>
   </div>
 </div>
 
@@ -5867,12 +5892,6 @@ window.addEventListener('load', async () => {
     tg.onEvent('viewportChanged', () => {
       const nav = document.getElementById('bottomNav');
       if (nav) nav.style.display = tg.isExpanded ? 'flex' : 'none';
-      // Resize token picker list when keyboard appears
-      const pickerModal = document.getElementById('tokenPickerModal');
-      if (pickerModal && pickerModal.classList.contains('open')) {
-        const modal = pickerModal.querySelector('.modal');
-        if (modal) modal.style.maxHeight = Math.min(tg.viewportHeight * 0.75, window.innerHeight * 0.75) + 'px';
-      }
     });
   }
 
