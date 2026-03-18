@@ -35,8 +35,10 @@ body {
   font-family: 'Syne', sans-serif;
   background: var(--bg);
   color: var(--text);
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
+  max-width: 100vw;
+  overscroll-behavior: none;
 }
 
 /* ─── AUTH SCREEN ─── */
@@ -601,7 +603,7 @@ body {
 .topbar-icon-btn svg { width: 15px; height: 15px; }
 
 /* ─── PAGE CONTENT ─── */
-.page { display: none; flex: 1; overflow-y: auto; padding: 32px 28px 90px; }
+.page { display: none; flex: 1; overflow-y: auto; padding: 32px 28px 90px; max-width: 100%; box-sizing: border-box; }
 .page.active { display: block; }
 
 /* ─── STAKING PAGE ─── */
@@ -1725,26 +1727,130 @@ body {
 }
 .page-title span { color: var(--pink); }
 
-/* ─── TELEGRAM WEB APP — MOBILE OVERRIDES ─── */
+/* ════════════════════════════════════════
+   TELEGRAM WEB APP — MOBILE OVERRIDES
+   ════════════════════════════════════════ */
 
-/* Hide Electron titlebar entirely */
-.titlebar { display: none !important; }
-
-/* Fix height — use CSS var set by JS from Telegram.WebApp */
-.app {
-  height: var(--tg-viewport-height, 100dvh);
-  height: 100dvh;
+/* ── Prevent ANY horizontal scroll on the entire page ── */
+html, body {
+  overflow-x: hidden !important;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: none;
+  max-width: 100vw;
+  touch-action: pan-y;
 }
 
-/* Hide desktop sidebar */
-.sidebar { display: none !important; }
+/* ── Hide Electron-only UI ── */
+.titlebar { display: none !important; }
+.sidebar  { display: none !important; }
 
-/* Main takes full width */
-.app-body { flex-direction: column; }
+/* ── App container: full screen, no overflow ── */
+.app {
+  height: 100dvh;
+  height: var(--tg-viewport-height, 100dvh);
+  max-width: 100vw;
+  overflow: hidden;
+}
+.app-body {
+  flex-direction: column;
+  overflow: hidden;
+}
 .main {
   width: 100% !important;
-  padding-bottom: 70px; /* space for bottom nav */
+  max-width: 100vw;
+  overflow-x: hidden;
 }
+
+/* ── Pages: vertical scroll only ── */
+.page {
+  overflow-x: hidden !important;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  max-width: 100vw;
+  padding: 20px 16px 90px;
+  box-sizing: border-box;
+}
+.page::-webkit-scrollbar { display: none; }
+.page { scrollbar-width: none; }
+
+/* ── All children can't exceed viewport ── */
+.page * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── Fix hero section: vertical on mobile ── */
+.hero-section {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px 16px;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.apy-ring { width: 120px; height: 120px; }
+.apy-value { font-size: 22px; }
+.stat-value { font-size: 22px; }
+
+/* ── Grids: single column on mobile ── */
+.assets-grid              { grid-template-columns: 1fr 1fr !important; gap: 10px !important; margin-bottom: 20px; }
+.assets-grid-sm           { grid-template-columns: 1fr !important; }
+.portfolio-body           { grid-template-columns: 1fr !important; }
+.settings-grid            { grid-template-columns: 1fr !important; }
+
+/* ── Markets table: compact 3-column on mobile ── */
+.markets-table-head,
+.mkt-row {
+  grid-template-columns: 24px 1fr 80px 70px !important;
+}
+/* hide mcap, vol, high, low on mobile */
+.mkt-mcap, .mkt-vol, .mkt-high, .mkt-low, .mkt-spark { display: none !important; }
+.markets-table-body { max-height: calc(100dvh - 240px); }
+
+/* ── Modals: bottom sheet style ── */
+.modal-overlay { align-items: flex-end !important; padding: 0 !important; }
+.modal {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border-radius: 20px 20px 0 0 !important;
+  max-height: 85dvh !important;
+  overflow-y: auto !important;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* ── Toast: above bottom nav ── */
+.toast {
+  bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important;
+  right: 12px !important;
+  left: 12px !important;
+  width: auto !important;
+  max-width: calc(100vw - 24px) !important;
+}
+
+/* ── Auth screen: fits small screens ── */
+.auth-wrap { max-width: 100%; padding: 16px; }
+.auth-card { padding: 28px 20px 24px; border-radius: 20px; }
+.auth-logo  { margin-bottom: 20px; }
+@media (max-height: 650px) {
+  .auth-card { padding: 20px 16px 18px; }
+  .auth-logo  { margin-bottom: 12px; }
+}
+
+/* ── Page title smaller on mobile ── */
+.page-title { font-size: 20px; margin-bottom: 14px; }
+
+/* ── Swap / Send / Receive wraps: full width ── */
+.swap-wrap, .send-wrap, .receive-wrap {
+  max-width: 100% !important;
+  margin: 0 !important;
+}
+
+/* ── Referral hero: center ── */
+.ref-hero-sub { max-width: 100%; }
+
+/* ── Safe area: top ── */
+.main { padding-top: env(safe-area-inset-top, 0px); }
 
 /* ─── BOTTOM NAV BAR ─── */
 .bottom-nav {
@@ -1753,12 +1859,11 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 60px;
+  height: calc(58px + env(safe-area-inset-bottom, 0px));
   background: var(--bg2);
   border-top: 1px solid var(--border);
   z-index: 200;
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  height: calc(60px + env(safe-area-inset-bottom, 0px));
 }
 .bottom-nav-btn {
   flex: 1;
@@ -1775,101 +1880,57 @@ body {
   font-family: 'Inter', sans-serif;
   font-size: 10px;
   font-weight: 500;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  -webkit-tap-highlight-color: transparent;
 }
-.bottom-nav-btn svg { width: 20px; height: 20px; }
+.bottom-nav-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
 .bottom-nav-btn.active { color: var(--pink); }
-.bottom-nav-btn span { line-height: 1; }
+.bottom-nav-btn span { line-height: 1; white-space: nowrap; }
 
-/* More menu overlay */
+/* ─── MORE MENU ─── */
 .more-menu {
   display: none;
   position: fixed;
-  bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(58px + env(safe-area-inset-bottom, 0px));
   left: 0;
   right: 0;
   background: var(--bg2);
   border-top: 1px solid var(--border);
   border-radius: 16px 16px 0 0;
   z-index: 199;
-  padding: 12px 8px;
+  padding: 14px 10px calc(10px + env(safe-area-inset-bottom, 0px));
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 8px;
 }
 .more-menu.open { display: flex; }
 .more-menu-btn {
-  flex: 0 0 calc(25% - 4px);
+  flex: 0 0 calc(33.333% - 6px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 6px;
   border: none;
   background: var(--card);
-  border-radius: 12px;
+  border-radius: 14px;
   color: var(--text2);
   cursor: pointer;
-  padding: 12px 4px;
+  padding: 14px 4px;
   font-family: 'Inter', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
-.more-menu-btn svg { width: 20px; height: 20px; }
+.more-menu-btn svg { width: 22px; height: 22px; }
 .more-menu-btn:active { background: var(--card2); color: var(--pink); }
 .more-menu-overlay {
   display: none;
   position: fixed;
   inset: 0;
   z-index: 198;
-  background: transparent;
+  background: rgba(0,0,0,0.4);
 }
 .more-menu-overlay.open { display: block; }
-
-/* Fix toast position above bottom nav */
-.toast {
-  bottom: calc(70px + env(safe-area-inset-bottom, 0px)) !important;
-  right: 12px !important;
-  left: 12px !important;
-  width: auto !important;
-}
-
-/* Fix modal safe area */
-.modal {
-  margin: 12px;
-  max-height: calc(100dvh - 100px);
-  overflow-y: auto;
-}
-
-/* Fix auth card padding on small screens */
-@media (max-height: 700px) {
-  .auth-card { padding: 28px 24px 24px; }
-  .auth-logo { margin-bottom: 20px; }
-}
-@media (max-width: 400px) {
-  .auth-card { padding: 32px 20px 28px; border-radius: 20px; }
-}
-
-/* Scrollable pages */
-.page { overflow-y: auto; -webkit-overflow-scrolling: touch; }
-
-/* Hide scrollbars */
-.page::-webkit-scrollbar { display: none; }
-.page { scrollbar-width: none; }
-
-/* Safe area top padding */
-.main { padding-top: env(safe-area-inset-top, 0px); }
-
-/* Tighten page padding on small screens */
-@media (max-width: 480px) {
-  .page { padding: 20px 16px 90px; }
-  .page-title { font-size: 20px; margin-bottom: 16px; }
-  .hero-section { padding: 16px; }
-  .stat-block { padding: 12px 16px; }
-  .assets-grid { grid-template-columns: 1fr; gap: 10px; }
-  .modal { border-radius: 20px 20px 0 0; position: fixed; bottom: 0; left: 0; right: 0; margin: 0; max-height: 80dvh; }
-  .modal-overlay { align-items: flex-end; }
-}
 </style>
 </head>
 <body>
@@ -2704,9 +2765,9 @@ body {
           <div class="mkt-th" onclick="sortMarkets('name')">Name</div>
           <div class="mkt-th right" onclick="sortMarkets('price')">Price</div>
           <div class="mkt-th right" onclick="sortMarkets('change')">24h %</div>
-          <div class="mkt-th right" onclick="sortMarkets('mcap')">Market Cap</div>
-          <div class="mkt-th right" onclick="sortMarkets('vol')">Volume 24h</div>
-          <div class="mkt-th right">7d Chart</div>
+          <div class="mkt-th right mkt-mcap" onclick="sortMarkets('mcap')">Market Cap</div>
+          <div class="mkt-th right mkt-vol" onclick="sortMarkets('vol')">Volume 24h</div>
+          <div class="mkt-th right mkt-spark">7d Chart</div>
         </div>
         <div class="markets-table-body" id="mktsTableBody">
           <!-- Skeleton rows while loading -->
