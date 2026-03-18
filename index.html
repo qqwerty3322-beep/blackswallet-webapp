@@ -1805,11 +1805,12 @@ body {
   inset: 0;
   z-index: 100;
   background: transparent;
-  align-items: unset;
-  justify-content: unset;
   backdrop-filter: none;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
 }
-#tokenPickerModal.open { display: block; }
+#tokenPickerModal.open { display: flex; }
    ════════════════════════════════════════ */
 
 /* ════════════════════════════════════════
@@ -1879,9 +1880,16 @@ html, body {
   max-width: 100% !important;
   margin: 0 !important;
   border-radius: 20px 20px 0 0 !important;
-  max-height: 85dvh !important;
+  max-height: 85vh !important;
   overflow-y: auto !important;
   padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+  position: relative !important;
+}
+
+/* Modals that contain inputs: fixed height so keyboard doesn't push them off */
+.modal-with-input {
+  max-height: none !important;
+  overflow-y: visible !important;
 }
 
 /* ── Toast: above bottom nav ── */
@@ -3096,7 +3104,7 @@ html, body {
 
 <!-- STAKE MODAL -->
 <div class="modal-overlay" id="stakeModal">
-  <div class="modal">
+  <div class="modal modal-with-input">
     <button class="modal-close" onclick="closeModal('stakeModal')">×</button>
     <div class="modal-title" id="stakeModalTitle">Start Earning</div>
     <div class="modal-sub">Choose amount to stake</div>
@@ -3117,7 +3125,7 @@ html, body {
 
 <!-- SEND CONFIRM MODAL -->
 <div class="modal-overlay" id="sendConfirmModal">
-  <div class="modal">
+  <div class="modal modal-with-input">
     <button class="modal-close" onclick="closeModal('sendConfirmModal')">×</button>
     <div class="modal-title">Confirm Send</div>
     <div class="modal-sub">Please verify all details before confirming</div>
@@ -3146,7 +3154,7 @@ html, body {
 
 <!-- SENT FUNDS MODAL -->
 <div class="modal-overlay" id="sentFundsModal">
-  <div class="modal" style="max-width:400px">
+  <div class="modal modal-with-input" style="max-width:400px">
     <button class="modal-close" onclick="closeModal('sentFundsModal')">×</button>
 
     <!-- Screen 1: Enter amount -->
@@ -3213,8 +3221,8 @@ html, body {
 <!-- TOKEN PICKER MODAL -->
 <div class="modal-overlay" id="tokenPickerModal">
   <div style="
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100%;
+    height: 100%;
     background: var(--bg2);
     display: flex;
     flex-direction: column;
@@ -3556,6 +3564,16 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) overlay.classList.remove('open');
   });
+});
+
+// Prevent keyboard from pushing modal-with-input off screen
+document.addEventListener('focusin', (e) => {
+  const modal = e.target.closest('.modal-with-input');
+  if (!modal) return;
+  // Small delay to let keyboard animate in
+  setTimeout(() => {
+    e.target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, 300);
 });
 
 // ─── CHART ───
