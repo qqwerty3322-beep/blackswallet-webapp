@@ -3129,13 +3129,13 @@ html, body {
 
 <!-- ─── BOTTOM NAV ─── -->
 <nav class="bottom-nav" id="bottomNav" style="display:none">
-  <button class="bottom-nav-btn" data-page="staking" onclick="navTo('staking')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/></svg>
-    <span>Staking</span>
-  </button>
   <button class="bottom-nav-btn active" data-page="portfolio" onclick="navTo('portfolio')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 18V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12"/><path d="M3 18h18"/><path d="M7 11h.01M12 11h.01M17 11h.01"/></svg>
     <span>Wallet</span>
+  </button>
+  <button class="bottom-nav-btn" data-page="staking" onclick="navTo('staking')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/></svg>
+    <span>Staking</span>
   </button>
   <button class="bottom-nav-btn" data-page="swap" onclick="navTo('swap')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4M7 4L3 8M7 4l4 4M17 8v12M17 20l4-4M17 20l-4-4"/></svg>
@@ -3453,7 +3453,7 @@ function switchPage(name) {
   document.querySelectorAll('.bottom-nav-btn[data-page]').forEach(b => b.classList.remove('active'));
   const bBtn = document.querySelector(`.bottom-nav-btn[data-page="${name}"]`);
   if (bBtn) bBtn.classList.add('active');
-  if (name === 'portfolio') setTimeout(renderAllocWidget, 100);
+  if (name === 'portfolio') { setTimeout(renderAllocWidget, 100); setTimeout(drawChart, 150); }
   if (typeof onPageSwitch === 'function') onPageSwitch(name);
 }
 
@@ -5132,6 +5132,9 @@ async function launchWallet(email, isNewLogin = false) {
     ['stakingBalance','totalEarnings','portfolioTotal','portfolioPnl','portfolioRewards']
       .forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '$0.00'; });
     refreshUI(); refreshStakingPage();
+
+    // Start on Wallet (portfolio) page
+    switchPage('portfolio');
 
     const list = document.getElementById('txList');
     const empty = document.getElementById('txEmpty');
