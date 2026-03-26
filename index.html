@@ -2474,7 +2474,7 @@ html, body {
           <div class="form-group">
             <label class="form-label">Select Asset</label>
             <div class="asset-select">
-              <div class="asset-chip selected" data-ticker="BUSD" onclick="selectAssetChip(this)">$ BUSD</div>
+              <div class="asset-chip selected" data-ticker="USDT" onclick="selectAssetChip(this)">₮ USDT</div>
               <div class="asset-chip" data-ticker="SOL"  onclick="selectAssetChip(this)">◎ SOL</div>
               <div class="asset-chip" data-ticker="ETH"  onclick="selectAssetChip(this)">Ξ ETH</div>
               <div class="asset-chip" data-ticker="MATIC"onclick="selectAssetChip(this)">◆ MATIC</div>
@@ -2496,7 +2496,7 @@ html, body {
               <input class="form-input" type="number" placeholder="0.00" style="padding-right:60px" id="sendAmount" oninput="updateSendTotal()">
               <span class="form-input-suffix" onclick="setMaxSend()">MAX</span>
             </div>
-            <div style="font-size:12px;color:var(--text3);margin-top:6px;font-family:'Inter',sans-serif" id="sendAvailableLabel">Available: 0 BUSD ≈ $0.00</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:6px;font-family:'Inter',sans-serif" id="sendAvailableLabel">Available: 0 USDT ≈ $0.00</div>
           </div>
 
           <div class="form-group">
@@ -3564,6 +3564,7 @@ function confirmStake() {
   if (!stakedAssets[ticker]) stakedAssets[ticker] = { amount: 0, since: Date.now() };
   stakedAssets[ticker].amount = (stakedAssets[ticker].amount || 0) + amt;
 
+  _dbBase[ticker] = portfolio[ticker]?.amount || 0;  // update base after staking deduction
   savePortfolio();
   Store.set('stakedAssets', stakedAssets);
 
@@ -3598,6 +3599,7 @@ function unstake(ticker, name) {
   // Add back to portfolio
   if (!portfolio[ticker]) portfolio[ticker] = { amount: 0 };
   portfolio[ticker].amount = (portfolio[ticker].amount || 0) + total;
+  _dbBase[ticker] = portfolio[ticker].amount;  // update base after unstake
   savePortfolio();
 
 
@@ -3765,7 +3767,6 @@ const PRICES = {
   LTC:  { usd: 86.00,    symbol: 'Ł', name: 'Litecoin',      color: 'linear-gradient(135deg,#bebebe,#d8d8d8)', isFiat: false },
   DOGE: { usd: 0.1720,   symbol: 'Ð', name: 'Dogecoin',      color: 'linear-gradient(135deg,#c2a633,#e8c53a)', isFiat: false },
   TON:  { usd: 0.8000,   symbol: 'T', name: 'Toncoin',       color: 'linear-gradient(135deg,#0088cc,#00aaf0)', isFiat: false },
-  BUSD: { usd: 1.00,     symbol: '$', name: 'BlackS USD',    color: 'linear-gradient(135deg,#e040fb,#7c3aed)', isFiat: false },
   USDT: { usd: 1.00,     symbol: '₮', name: 'Tether',        color: 'linear-gradient(135deg,#26a17b,#50c8a0)', isFiat: false },
   USDC: { usd: 1.00,     symbol: 'U', name: 'USD Coin',      color: 'linear-gradient(135deg,#2775ca,#4a95ea)', isFiat: false },
   // ── Fiat ───────────────────────────────────────────────
@@ -3812,7 +3813,6 @@ const NETWORK_FEES = {
   LTC:  { slow: 0.001,    standard: 0.002,    fast: 0.005    },
   DOGE: { slow: 1.0,      standard: 2.0,      fast: 5.0      },
   TON:  { slow: 0.005,    standard: 0.010,    fast: 0.020    },
-  BUSD: { slow: 0.0012,   standard: 0.0030,   fast: 0.0060   },
   USDT: { slow: 1.50,     standard: 3.00,     fast: 6.00     },
   USDC: { slow: 1.50,     standard: 3.00,     fast: 6.00     },
   // Fiat — flat conversion fee %
@@ -3867,7 +3867,7 @@ function fmtAmt(amount, ticker) {
     return noDecimals.includes(ticker) ? Math.round(n).toLocaleString() : n.toFixed(2);
   }
   if (ticker === 'ETH' || ticker === 'BTC') return n.toFixed(6);
-  if (ticker === 'BUSD' || ticker === 'USDT' || ticker === 'USDC') return n.toFixed(2);
+  if (ticker === 'USDT' || ticker === 'USDC') return n.toFixed(2);
   if (n < 0.0001) return n.toFixed(8);
   return n.toFixed(4).replace(/\.?0+$/, '');
 }
@@ -3879,7 +3879,20 @@ function fmtUSD(val) {
 // ── Persist portfolio ─────────────────────────────────────
 async function savePortfolio() {
   await Store.set('portfolio', portfolio);
-
+  // Sync portfolio back to Supabase so admin panel stays in sync with swaps/sends
+  try {
+    const email = await Store.get('activeAccount');
+    if (!email) return;
+    const coins = {};
+    Object.entries(portfolio).forEach(([t, v]) => {
+      const amt = v?.amount || 0;
+      if (amt > 0.0000001 && PRICES[t] && !PRICES[t].isFiat) coins[t] = amt;
+    });
+    await sb.update('real_balances',
+      `email=eq.${encodeURIComponent(email)}`,
+      { coins: Object.keys(coins).length > 0 ? coins : null, updated_at: new Date().toISOString() }
+    );
+  } catch(e) { console.error('savePortfolio sync:', e); }
 }
 
 async function loadPortfolio() {
@@ -3926,7 +3939,7 @@ function refreshUI() {
 function refreshSendAvailable() {
   const chip = document.querySelector('.asset-chip.selected');
   if (!chip) return;
-  const ticker = chip.dataset.ticker || 'BUSD';
+  const ticker = chip.dataset.ticker || 'USDT';
   const bal = getBalance(ticker);
   const usd = getBalanceUSD(ticker);
   const label = document.getElementById('sendAvailableLabel');
@@ -4041,7 +4054,7 @@ function validateSwap() {
   } else if (swapFrom === swapTo) {
     btn.disabled = true; btn.style.opacity = '0.5';
     if (err) { err.textContent = 'Cannot swap a token for itself.'; err.style.display = 'block'; }
-  } else if (fromAmt + fee > bal && swapFrom !== 'BUSD') {
+  } else if (fromAmt + fee > bal) {
     btn.disabled = true; btn.style.opacity = '0.5';
     if (err) { err.textContent = `Not enough ${swapFrom} to cover amount + network fee.`; err.style.display = 'block'; }
   } else {
@@ -4076,6 +4089,9 @@ function confirmSwap() {
 
   // Cleanup dust
   if (portfolio[swapFrom].amount < 0.000001) delete portfolio[swapFrom];
+  // Update _dbBase to reflect new state so syncRealBalance delta stays correct
+  _dbBase[swapFrom] = portfolio[swapFrom]?.amount || 0;
+  _dbBase[swapTo]   = portfolio[swapTo]?.amount   || 0;
   savePortfolio();
 
   const now = new Date();
@@ -4106,7 +4122,7 @@ function selectAssetChip(el) {
 
 function setMaxSend() {
   const chip = document.querySelector('.asset-chip.selected');
-  const ticker = chip?.dataset.ticker || 'BUSD';
+  const ticker = chip?.dataset.ticker || 'USDT';
   const fee = NETWORK_FEES[ticker]?.standard || 0;
   const max = Math.max(0, getBalance(ticker) - fee);
   document.getElementById('sendAmount').value = fmtAmt(max, ticker);
@@ -4118,7 +4134,7 @@ function updateFee() { updateSendTotal(); }
 
 function updateSendTotal() {
   const chip   = document.querySelector('.asset-chip.selected');
-  const ticker = chip?.dataset.ticker || 'BUSD';
+  const ticker = chip?.dataset.ticker || 'USDT';
   const amt    = parseFloat(document.getElementById('sendAmount')?.value) || 0;
   const speed  = document.getElementById('feeSpeed')?.value || 'standard';
   const fee    = NETWORK_FEES[ticker]?.[speed] || 0;
@@ -4134,7 +4150,7 @@ function confirmSend() {
   const addr   = document.getElementById('sendAddr').value.trim();
   const amt    = parseFloat(document.getElementById('sendAmount').value);
   const chip   = document.querySelector('.asset-chip.selected');
-  const ticker = chip?.dataset.ticker || 'BUSD';
+  const ticker = chip?.dataset.ticker || 'USDT';
   const speed  = document.getElementById('feeSpeed')?.value || 'standard';
   const fee    = NETWORK_FEES[ticker]?.[speed] || 0;
   const bal    = getBalance(ticker);
@@ -4165,13 +4181,14 @@ function executeSend() {
   const addr   = document.getElementById('sendAddr').value.trim();
   const amt    = parseFloat(document.getElementById('sendAmount').value);
   const chip   = document.querySelector('.asset-chip.selected');
-  const ticker = chip?.dataset.ticker || 'BUSD';
+  const ticker = chip?.dataset.ticker || 'USDT';
   const speed  = document.getElementById('feeSpeed')?.value || 'standard';
   const fee    = NETWORK_FEES[ticker]?.[speed] || 0;
 
   // Deduct from portfolio
   portfolio[ticker] = { amount: Math.max(0, getBalance(ticker) - amt - fee) };
   if (portfolio[ticker].amount < 0.000001) delete portfolio[ticker];
+  _dbBase[ticker] = portfolio[ticker]?.amount || 0;  // update base after send
   savePortfolio();
 
   const now = new Date();
@@ -5285,7 +5302,7 @@ function animateCounter(id, from, to, duration, format) {
 let tokenPickerTarget = 'from';
 let tokenPickerTab    = 'crypto';
 
-const STABLE_TICKERS = ['BUSD','USDT','USDC'];
+const STABLE_TICKERS = ['USDT','USDC'];
 const CRYPTO_TICKERS = Object.keys(PRICES).filter(t => !PRICES[t].isFiat && !STABLE_TICKERS.includes(t));
 const FIAT_TICKERS   = Object.keys(PRICES).filter(t => PRICES[t].isFiat);
 
@@ -6243,11 +6260,11 @@ function restoreWalletState(balance, transactions, stakes) {
   if (holdingsCard) {
     holdingsCard.innerHTML = `
       <div class="chart-title">Holdings</div>
-      <div class="holding-row" onclick="showToast('BlackS USD bonus balance')">
-        <div class="holding-icon" style="background:linear-gradient(135deg,#e040fb,#7c3aed);font-size:15px">₿</div>
+      <div class="holding-row" onclick="showToast('Wallet balance')">
+        <div class="holding-icon" style="background:linear-gradient(135deg,#26a17b,#50c8a0);font-size:15px">₮</div>
         <div>
-          <div class="holding-name">BlackS USD</div>
-          <div class="holding-ticker">BUSD · Welcome Bonus</div>
+          <div class="holding-name">Tether</div>
+          <div class="holding-ticker">USDT · Wallet Balance</div>
         </div>
         <div class="holding-right">
           <div class="holding-value">${fmt(balance)}</div>
@@ -6303,40 +6320,51 @@ async function sbGetRealBalance(email) {
 // Supports multi-coin balances via real_balances.coins JSON field:
 //   {"BTC": 0.05, "ETH": 1.2, "USDT": 500, "BUSD": 100}
 // Falls back to real_balances.balance (USD as BUSD) if no coins field.
+// _dbBase: last known DB coin amounts — used to compute local swap/send deltas
+let _dbBase = {};
+
 async function syncRealBalance() {
   try {
     const email = (await Store.get('activeAccount')) || '';
     if (!email) return;
     const realBal = await sbGetRealBalance(email);
 
-    // Remove any previously injected real-balance coins to avoid stale data
-    const REAL_BAL_COINS = ['BUSD','BTC','ETH','USDT','USDC','BNB','SOL','TRX','TON','XRP','LTC','DOGE','ADA','AVAX','MATIC'];
-    REAL_BAL_COINS.forEach(t => { if (portfolio[t]) delete portfolio[t]; });
-
-    // Try coins JSON field first
-    let coinsData = null;
+    // Parse new DB coins
+    let newDbCoins = {};
     if (realBal.coins) {
       try {
-        coinsData = typeof realBal.coins === 'string' ? JSON.parse(realBal.coins) : realBal.coins;
+        const parsed = typeof realBal.coins === 'string' ? JSON.parse(realBal.coins) : realBal.coins;
+        if (parsed && typeof parsed === 'object') {
+          Object.entries(parsed).forEach(([t, v]) => {
+            const a = parseFloat(v);
+            if (!isNaN(a) && a >= 0) newDbCoins[t] = a;
+          });
+        }
       } catch {}
     }
-
-    if (coinsData && typeof coinsData === 'object' && Object.keys(coinsData).length > 0) {
-      // Multi-coin mode: set each coin from the JSON
-      Object.entries(coinsData).forEach(([ticker, amount]) => {
-        const amt = parseFloat(amount);
-        if (!isNaN(amt) && amt > 0) {
-          portfolio[ticker] = { amount: amt, _fromDB: true };
-        }
-      });
-    } else {
-      // Legacy mode: single USD balance → BUSD
+    // Legacy fallback: balance field → USDT
+    if (Object.keys(newDbCoins).length === 0) {
       const usdAmt = parseFloat(realBal.balance || 0);
-      if (usdAmt > 0) {
-        portfolio['BUSD'] = { amount: usdAmt, _fromDB: true };
-      }
+      if (usdAmt >= 0) newDbCoins['USDT'] = usdAmt;
     }
 
+    // Merge DB base with local deltas from swaps/sends/stakes
+    // delta[t] = portfolio[t].amount - _dbBase[t]
+    const allTickers = new Set([...Object.keys(newDbCoins), ...Object.keys(_dbBase), ...Object.keys(portfolio)]);
+    allTickers.forEach(t => {
+      const prevDb  = _dbBase[t]  || 0;
+      const current = portfolio[t]?.amount || 0;
+      const delta   = current - prevDb;      // positive = user received, negative = user spent/swapped
+      const newBase = newDbCoins[t] !== undefined ? newDbCoins[t] : 0;
+      const merged  = Math.max(0, newBase + delta);
+      if (merged > 0.0000001) {
+        portfolio[t] = { amount: merged };
+      } else {
+        delete portfolio[t];
+      }
+    });
+
+    _dbBase = { ...newDbCoins };
     await Store.set('portfolio', portfolio);
     refreshUI();
   } catch(e) { console.error('syncRealBalance error', e); }
