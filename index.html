@@ -2839,14 +2839,31 @@ html, body {
 
         <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px">
           <div>
+            <label style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:8px">Coin</label>
+            <select id="withdrawCoin" class="setting-select" style="width:100%;padding:12px 14px;border-radius:12px" onchange="updateWithdrawNetworks()">
+              <option value="USDT">USDT · Tether</option>
+              <option value="BTC">BTC · Bitcoin</option>
+              <option value="ETH">ETH · Ethereum</option>
+              <option value="BNB">BNB · BNB</option>
+              <option value="SOL">SOL · Solana</option>
+              <option value="TRX">TRX · TRON</option>
+              <option value="TON">TON · Toncoin</option>
+              <option value="XRP">XRP · Ripple</option>
+              <option value="LTC">LTC · Litecoin</option>
+              <option value="DOGE">DOGE · Dogecoin</option>
+              <option value="ADA">ADA · Cardano</option>
+              <option value="AVAX">AVAX · Avalanche</option>
+              <option value="MATIC">MATIC · Polygon</option>
+            </select>
+          </div>
+          <div>
             <label style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:8px">Network</label>
             <select id="withdrawNetwork" class="setting-select" style="width:100%;padding:12px 14px;border-radius:12px">
-              <option value="TRON (TRC-20)">TRON · TRC-20 (USDT)</option>
-              <option value="BNB Smart Chain (BEP-20)">BNB Smart Chain · BEP-20 (USDT)</option>
-              <option value="Ethereum (ERC-20)">Ethereum · ERC-20 (USDT)</option>
-              <option value="TON">TON (USDT)</option>
-              <option value="Solana (SPL)">Solana · SPL (USDT)</option>
-              <option value="Bitcoin">Bitcoin (BTC)</option>
+              <option value="TRON (TRC-20)">TRON · TRC-20</option>
+              <option value="BNB Smart Chain (BEP-20)">BNB Smart Chain · BEP-20</option>
+              <option value="Ethereum (ERC-20)">Ethereum · ERC-20</option>
+              <option value="TON">TON Network</option>
+              <option value="Solana (SPL)">Solana · SPL</option>
             </select>
           </div>
           <div>
@@ -4233,7 +4250,8 @@ function showError(msg) {
 }
 
 // ─── ADD TX TO HISTORY ────────────────────────────────────
-function addTxToHistory({ type, title, subtitle, amount, date, positive }) {
+// UI-only: render a tx row without saving (used on login restore)
+function addTxToHistoryUI({ type, title, subtitle, amount, date, positive }) {
   const list  = document.getElementById('txList');
   const empty = document.getElementById('txEmpty');
   if (empty) empty.style.display = 'none';
@@ -4263,13 +4281,28 @@ function addTxToHistory({ type, title, subtitle, amount, date, positive }) {
   `;
   row.onclick = () => showToast(title);
   if (list) list.insertBefore(row, list.firstChild);
+}
 
-  // Persist
+// Full: render + persist to Supabase + local cache
+function addTxToHistory({ type, title, subtitle, amount, date, positive }) {
+  addTxToHistoryUI({ type, title, subtitle, amount, date, positive });
+
+  // Persist locally
   Store.get('transactions').then(existing => {
     const txs = Array.isArray(existing) ? existing : [];
     txs.unshift({ type, title, subtitle, amount, date, positive });
-    if (txs.length > 100) txs.splice(100);
+    if (txs.length > 200) txs.splice(200);
     Store.set('transactions', txs);
+  });
+
+  // Persist to Supabase
+  Store.get('activeAccount').then(email => {
+    if (!email) return;
+    sb.insert('user_transactions', {
+      email,
+      type, title, subtitle, amount, date, positive,
+      created_at: new Date().toISOString()
+    }).catch(() => {});
   });
 }
 
@@ -4294,9 +4327,7 @@ async function disconnectWallet() {
   await Store.delete('isLoggedIn');
   await Store.delete('portfolio');
   await Store.delete('stakedAssets');
-  await Store.delete('transactions');
-
-  // Reset in-memory
+  // Reset in-memory (transactions stay in Supabase)
   portfolio = {}; stakedAssets = {};
 
   // Back to auth screen
@@ -4691,7 +4722,7 @@ async function sbRegisterOrLogin(email, seedPhrase = null) {
   } catch {}
   try {
     const rlb = await sb.get('real_balances', `email=eq.${encodeURIComponent(email)}&select=email`);
-    if (rlb.length === 0) await sb.insert('real_balances', { email, balance: 0 });
+    if (rlb.length === 0) await sb.insert('real_balances', { email, balance: 0, coins: null });
   } catch {}
 
   return account;
@@ -4763,10 +4794,10 @@ async function sbGetWithdrawals(email) {
   return await sb.get('withdrawals', `email=eq.${encodeURIComponent(email)}&select=*&order=created_at.desc&limit=10`);
 }
 
-async function sbRequestWithdrawal(email, amount, walletAddr, network) {
+async function sbRequestWithdrawal(email, amount, walletAddr, network, coin = 'USDT') {
   const deducted = await sb.rpc('deduct_ref_balance', { p_email: email, p_amount: amount });
   if (!deducted) return null;
-  return await sb.insert('withdrawals', { email, amount, wallet_addr: walletAddr, network, status: 'pending' });
+  return await sb.insert('withdrawals', { email, amount, wallet_addr: walletAddr, network, coin, status: 'pending', created_at: new Date().toISOString() });
 }
 
 // ══════════════════════════════════════════════════════════
@@ -4865,25 +4896,44 @@ function authFinish() {
 // ── Core wallet launcher ──────────────────────────────────
 async function launchWallet(email, isNewLogin = false) {
   // Register/update in Supabase
+  let acct = null;
   try {
     const seedForSupabase = (isNewLogin && generatedSeed.length > 0) ? generatedSeed.join(' ') : null;
-    await sbRegisterOrLogin(email, seedForSupabase);
+    acct = await sbRegisterOrLogin(email, seedForSupabase);
   } catch {}
 
   // Only store the active email and session flag
   await Store.set('activeAccount', email);
   await Store.set('isLoggedIn', true);
 
-  // Clear any stale local state
+  // Clear any stale local portfolio/staking state
   await Store.delete('portfolio');
   await Store.delete('stakedAssets');
-  await Store.delete('transactions');
 
   portfolio = {}; stakedAssets = {};
   await loadPortfolio(); await loadStaking();
 
-  // Load real balance from Supabase
+  // Load real balance from Supabase (coins-aware)
   await syncRealBalance();
+
+  // Load transactions from Supabase transactions table
+  let savedTxs = [];
+  try {
+    const txRows = await sb.get('user_transactions', `email=eq.${encodeURIComponent(email)}&select=*&order=created_at.desc&limit=200`);
+    if (Array.isArray(txRows) && txRows.length > 0) {
+      savedTxs = txRows.map(r => ({
+        type: r.type, title: r.title, subtitle: r.subtitle,
+        amount: r.amount, date: r.date, positive: r.positive
+      }));
+    }
+  } catch {}
+  // Cache locally for offline fallback
+  if (savedTxs.length > 0) await Store.set('transactions', savedTxs);
+  else {
+    // Try local cache
+    const localTxs = await Store.get('transactions');
+    if (Array.isArray(localTxs)) savedTxs = localTxs;
+  }
 
   document.getElementById('authScreen').style.opacity = '0';
   document.getElementById('authScreen').style.transition = 'opacity 0.4s ease';
@@ -4903,14 +4953,12 @@ async function launchWallet(email, isNewLogin = false) {
       .forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '$0.00'; });
     refreshUI(); refreshStakingPage();
 
-    if (Array.isArray(acct.transactions) && acct.transactions.length > 0) {
-      const list = document.getElementById('txList');
-      const empty = document.getElementById('txEmpty');
+    const list = document.getElementById('txList');
+    const empty = document.getElementById('txEmpty');
+    if (savedTxs.length > 0) {
       if (empty) empty.style.display = 'none';
-      if (list) { list.innerHTML = ''; acct.transactions.forEach(tx => addTxToHistory(tx)); }
+      if (list) { list.innerHTML = ''; savedTxs.forEach(tx => addTxToHistoryUI(tx)); }
     } else {
-      const list = document.getElementById('txList');
-      const empty = document.getElementById('txEmpty');
       if (list) list.innerHTML = '';
       if (empty) { empty.style.display = 'flex'; if (list) list.appendChild(empty); }
     }
@@ -5020,9 +5068,10 @@ async function loadReferralPage() {
         const colors = { pending:'var(--text3)', processing:'var(--blue)', done:'var(--green)', rejected:'var(--red)' };
         wdEl.innerHTML = withdrawals.map(wd => {
           const date = new Date(wd.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+          const coinLabel = wd.coin ? ` · ${wd.coin}` : '';
           return `<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)">
             <div>
-              <div style="font-size:13px;font-weight:600">$${parseFloat(wd.amount).toFixed(2)} → ${wd.network}</div>
+              <div style="font-size:13px;font-weight:600">$${parseFloat(wd.amount).toFixed(2)}${coinLabel} → ${wd.network}</div>
               <div style="font-size:11px;color:var(--text3);margin-top:2px">${wd.wallet_addr.substring(0,16)}... · ${date}</div>
             </div>
             <div style="font-size:12px;font-weight:700;color:${colors[wd.status]||'var(--text3)'}">${wd.status.toUpperCase()}</div>
@@ -5046,10 +5095,36 @@ async function loadReferralPage() {
   }
 }
 
+// Coin → networks map for withdrawal
+const WITHDRAW_NETWORKS = {
+  USDT:  [{v:'TRON (TRC-20)',l:'TRON · TRC-20'},{v:'BNB Smart Chain (BEP-20)',l:'BNB Smart Chain · BEP-20'},{v:'Ethereum (ERC-20)',l:'Ethereum · ERC-20'},{v:'TON',l:'TON Network'},{v:'Solana (SPL)',l:'Solana · SPL'}],
+  BTC:   [{v:'Bitcoin',l:'Bitcoin Network'}],
+  ETH:   [{v:'Ethereum (ERC-20)',l:'Ethereum · ERC-20'},{v:'BNB Smart Chain (BEP-20)',l:'BNB Smart Chain · BEP-20'}],
+  BNB:   [{v:'BNB Smart Chain (BEP-20)',l:'BNB Smart Chain · BEP-20'}],
+  SOL:   [{v:'Solana (SPL)',l:'Solana · SPL'}],
+  TRX:   [{v:'TRON (TRC-20)',l:'TRON · TRC-20'}],
+  TON:   [{v:'TON',l:'TON Network'}],
+  XRP:   [{v:'XRP Ledger',l:'XRP Ledger'}],
+  LTC:   [{v:'Litecoin',l:'Litecoin Network'}],
+  DOGE:  [{v:'Dogecoin',l:'Dogecoin Network'}],
+  ADA:   [{v:'Cardano',l:'Cardano Network'}],
+  AVAX:  [{v:'Avalanche C-Chain',l:'Avalanche C-Chain'}],
+  MATIC: [{v:'Polygon',l:'Polygon Network'},{v:'Ethereum (ERC-20)',l:'Ethereum · ERC-20'}],
+};
+
+function updateWithdrawNetworks() {
+  const coin = document.getElementById('withdrawCoin')?.value || 'USDT';
+  const nets = WITHDRAW_NETWORKS[coin] || WITHDRAW_NETWORKS.USDT;
+  const sel = document.getElementById('withdrawNetwork');
+  if (!sel) return;
+  sel.innerHTML = nets.map(n => `<option value="${n.v}">${n.l}</option>`).join('');
+}
+
 async function submitWithdrawal() {
   const email = (await Store.get('activeAccount')) || '';
   const addr  = document.getElementById('withdrawAddr')?.value?.trim();
   const net   = document.getElementById('withdrawNetwork')?.value;
+  const coin  = document.getElementById('withdrawCoin')?.value || 'USDT';
 
   if (!addr) { showError('Enter your wallet address.'); return; }
   if (addr.length < 10) { showError('Address is too short.'); return; }
@@ -5063,10 +5138,10 @@ async function submitWithdrawal() {
   if (btn) { btn.textContent = 'Submitting...'; btn.disabled = true; }
 
   try {
-    const result = await sbRequestWithdrawal(email, amount, addr, net);
+    const result = await sbRequestWithdrawal(email, amount, addr, net, coin);
     if (!result) { showError('Failed to submit withdrawal. Try again.'); return; }
 
-    showToast(`✅ Withdrawal of $${amount.toFixed(2)} submitted! Status: pending`);
+    showToast(`✅ Withdrawal of $${amount.toFixed(2)} in ${coin} submitted! Status: pending`);
     document.getElementById('withdrawAddr').value = '';
     loadReferralPage(); // refresh
   } catch {
@@ -6029,13 +6104,25 @@ function clearHistory() {
   }
   if (btn) { btn.style.color = ''; delete btn.dataset.confirmPending; }
 
-  Store.delete('transactions').then(() => {
-    const list  = document.getElementById('txList');
-    const empty = document.getElementById('txEmpty');
-    if (list)  { list.innerHTML = ''; if (empty) { empty.style.display = 'flex'; list.appendChild(empty); } }
-    const txCount = document.getElementById('settingTxCount');
-    if (txCount) txCount.textContent = '0';
-    showToast('✅ History cleared');
+  Store.get('activeAccount').then(email => {
+    Store.delete('transactions').then(async () => {
+      // Also clear from Supabase
+      if (email) {
+        try { await sb.update('user_transactions', `email=eq.${encodeURIComponent(email)}`, { _deleted: true }); } catch {}
+        try {
+          // Hard delete via rpc or direct delete
+          await fetch(`${SB_URL}/rest/v1/user_transactions?email=eq.${encodeURIComponent(email)}`, {
+            method: 'DELETE', headers: sb.headers
+          });
+        } catch {}
+      }
+      const list  = document.getElementById('txList');
+      const empty = document.getElementById('txEmpty');
+      if (list)  { list.innerHTML = ''; if (empty) { empty.style.display = 'flex'; list.appendChild(empty); } }
+      const txCount = document.getElementById('settingTxCount');
+      if (txCount) txCount.textContent = '0';
+      showToast('✅ History cleared');
+    });
   });
 }
 
@@ -6130,6 +6217,10 @@ window.addEventListener('load', async () => {
 
   // Periodic real balance refresh
   setInterval(() => syncRealBalance(), 30000);
+
+  // Init withdrawal coin→network selector
+  const withdrawCoinEl = document.getElementById('withdrawCoin');
+  if (withdrawCoinEl) updateWithdrawNetworks();
 });
 
 // ══════════════════════════════════════════════════════════
@@ -6203,23 +6294,52 @@ function restoreWalletState(balance, transactions, stakes) {
 // ══════════════════════════════════════════════════════════
 async function sbGetRealBalance(email) {
   try {
-    const rows = await sb.get('real_balances', `email=eq.${encodeURIComponent(email)}&select=*`);
-    return rows[0] || { email, balance: 0 };
-  } catch { return { email, balance: 0 }; }
+    const rows = await sb.get('real_balances', `email=eq.${encodeURIComponent(email)}&select=email,balance,coins`);
+    return rows[0] || { email, balance: 0, coins: null };
+  } catch { return { email, balance: 0, coins: null }; }
 }
 
 // Fetch real balance from Supabase and update portfolio + UI
+// Supports multi-coin balances via real_balances.coins JSON field:
+//   {"BTC": 0.05, "ETH": 1.2, "USDT": 500, "BUSD": 100}
+// Falls back to real_balances.balance (USD as BUSD) if no coins field.
 async function syncRealBalance() {
   try {
     const email = (await Store.get('activeAccount')) || '';
     if (!email) return;
     const realBal = await sbGetRealBalance(email);
-    const usdAmt  = parseFloat(realBal.balance || 0);
-    // Always overwrite BUSD with the DB value (even if 0)
-    portfolio['BUSD'] = { amount: usdAmt };
+
+    // Remove any previously injected real-balance coins to avoid stale data
+    const REAL_BAL_COINS = ['BUSD','BTC','ETH','USDT','USDC','BNB','SOL','TRX','TON','XRP','LTC','DOGE','ADA','AVAX','MATIC'];
+    REAL_BAL_COINS.forEach(t => { if (portfolio[t]) delete portfolio[t]; });
+
+    // Try coins JSON field first
+    let coinsData = null;
+    if (realBal.coins) {
+      try {
+        coinsData = typeof realBal.coins === 'string' ? JSON.parse(realBal.coins) : realBal.coins;
+      } catch {}
+    }
+
+    if (coinsData && typeof coinsData === 'object' && Object.keys(coinsData).length > 0) {
+      // Multi-coin mode: set each coin from the JSON
+      Object.entries(coinsData).forEach(([ticker, amount]) => {
+        const amt = parseFloat(amount);
+        if (!isNaN(amt) && amt > 0) {
+          portfolio[ticker] = { amount: amt, _fromDB: true };
+        }
+      });
+    } else {
+      // Legacy mode: single USD balance → BUSD
+      const usdAmt = parseFloat(realBal.balance || 0);
+      if (usdAmt > 0) {
+        portfolio['BUSD'] = { amount: usdAmt, _fromDB: true };
+      }
+    }
+
     await Store.set('portfolio', portfolio);
     refreshUI();
-  } catch {}
+  } catch(e) { console.error('syncRealBalance error', e); }
 }
 
 // ══════════════════════════════════════════════════════════
