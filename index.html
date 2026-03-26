@@ -2155,12 +2155,12 @@ html, body {
       </svg>
     </div>
 
-    <button class="nav-btn active" data-page="staking" title="Staking">
+    <button class="nav-btn" data-page="staking" title="Staking">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="9"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/>
       </svg>
     </button>
-    <button class="nav-btn" data-page="portfolio" title="Portfolio">
+    <button class="nav-btn active" data-page="portfolio" title="Wallet">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
       </svg>
@@ -2215,7 +2215,7 @@ html, body {
     <!-- TOPBAR -->
     <!-- CUSTOM TITLEBAR (draggable, window controls) -->
     <!-- STAKING PAGE -->
-    <div class="page active" id="page-staking">
+    <div class="page" id="page-staking">
       <div class="hero-section">
         <div class="apy-ring-wrap">
           <div class="apy-ring">
@@ -2352,8 +2352,8 @@ html, body {
     </div>
 
     <!-- PORTFOLIO PAGE -->
-    <div class="page" id="page-portfolio">
-      <div class="page-title">My <span>Portfolio</span></div>
+    <div class="page active" id="page-portfolio">
+      <div class="page-title">My <span>Wallet</span></div>
 
       <div class="portfolio-header">
         <div class="portfolio-stat-card">
@@ -2374,23 +2374,16 @@ html, body {
       </div>
 
       <div class="portfolio-body">
-        <div class="chart-card">
-          <div class="chart-title">
-            Portfolio Value
-            <div class="chart-tabs">
-              <button class="chart-tab active" onclick="setChartTab(this,'1D')">1D</button>
-              <button class="chart-tab" onclick="setChartTab(this,'1W')">1W</button>
-              <button class="chart-tab" onclick="setChartTab(this,'1M')">1M</button>
-              <button class="chart-tab" onclick="setChartTab(this,'1Y')">1Y</button>
-            </div>
+        <div class="chart-card" style="display:flex;flex-direction:column;gap:0">
+          <div class="chart-title" style="margin-bottom:12px">
+            Allocation
+            <span id="allocTotalLabel" style="font-size:11px;color:var(--text3);font-weight:400;margin-left:6px"></span>
           </div>
-          <canvas class="portfolio-chart" id="portfolioChart"></canvas>
-          <div class="chart-legend">
-            <div class="legend-item"><div class="legend-dot" style="background:var(--pink)"></div> SOL</div>
-            <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div> ETH</div>
-            <div class="legend-item"><div class="legend-dot" style="background:var(--violet)"></div> MATIC</div>
-            <div class="legend-item"><div class="legend-dot" style="background:var(--cyan)"></div> ADA</div>
-          </div>
+          <!-- Stacked bar -->
+          <div id="allocBar" style="height:10px;border-radius:6px;overflow:hidden;display:flex;margin-bottom:16px;background:var(--bg3)"></div>
+          <!-- Rows -->
+          <div id="allocRows" style="display:flex;flex-direction:column;gap:8px"></div>
+          <div id="allocEmpty" style="display:none;text-align:center;padding:24px 0;color:var(--text3);font-size:12px">No assets yet — add funds to get started</div>
         </div>
 
         <div class="holdings-card">
@@ -3136,13 +3129,13 @@ html, body {
 
 <!-- ─── BOTTOM NAV ─── -->
 <nav class="bottom-nav" id="bottomNav" style="display:none">
-  <button class="bottom-nav-btn active" data-page="staking" onclick="navTo('staking')">
+  <button class="bottom-nav-btn" data-page="staking" onclick="navTo('staking')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/></svg>
     <span>Staking</span>
   </button>
-  <button class="bottom-nav-btn" data-page="portfolio" onclick="navTo('portfolio')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-    <span>Portfolio</span>
+  <button class="bottom-nav-btn active" data-page="portfolio" onclick="navTo('portfolio')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 18V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12"/><path d="M3 18h18"/><path d="M7 11h.01M12 11h.01M17 11h.01"/></svg>
+    <span>Wallet</span>
   </button>
   <button class="bottom-nav-btn" data-page="swap" onclick="navTo('swap')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4M7 4L3 8M7 4l4 4M17 8v12M17 20l4-4M17 20l-4-4"/></svg>
@@ -3460,7 +3453,7 @@ function switchPage(name) {
   document.querySelectorAll('.bottom-nav-btn[data-page]').forEach(b => b.classList.remove('active'));
   const bBtn = document.querySelector(`.bottom-nav-btn[data-page="${name}"]`);
   if (bBtn) bBtn.classList.add('active');
-  if (name === 'portfolio') setTimeout(drawChart, 100);
+  if (name === 'portfolio') setTimeout(renderAllocWidget, 100);
   if (typeof onPageSwitch === 'function') onPageSwitch(name);
 }
 
@@ -3893,6 +3886,75 @@ function fmtUSD(val) {
 }
 
 // ── Persist portfolio ─────────────────────────────────────
+// ══════════════════════════════════════════════
+// ALLOCATION WIDGET — replaces chart
+// ══════════════════════════════════════════════
+const ALLOC_COLORS = [
+  '#e040fb','#7c3aed','#3b82f6','#22c55e','#f59e0b',
+  '#ef4444','#06b6d4','#f97316','#a855f7','#10b981',
+  '#ec4899','#84cc16','#0ea5e9','#d946ef','#14b8a6',
+];
+
+function renderAllocWidget() {
+  const bar   = document.getElementById('allocBar');
+  const rows  = document.getElementById('allocRows');
+  const empty = document.getElementById('allocEmpty');
+  const label = document.getElementById('allocTotalLabel');
+  if (!bar || !rows) return;
+
+  // Gather non-zero, non-fiat holdings
+  const holdings = Object.entries(portfolio)
+    .map(([t, v]) => ({ t, amt: v?.amount || 0, usd: (v?.amount || 0) * (PRICES[t]?.usd || 0) }))
+    .filter(h => h.amt > 0.0000001 && PRICES[h.t] && !PRICES[h.t].isFiat)
+    .sort((a, b) => b.usd - a.usd);
+
+  const totalUSD = holdings.reduce((s, h) => s + h.usd, 0);
+
+  if (holdings.length === 0) {
+    bar.style.display   = 'none';
+    rows.style.display  = 'none';
+    empty.style.display = 'block';
+    if (label) label.textContent = '';
+    return;
+  }
+
+  bar.style.display   = 'flex';
+  rows.style.display  = 'flex';
+  empty.style.display = 'none';
+  if (label) label.textContent = fmtUSD(totalUSD) + ' total';
+
+  // Stacked bar
+  bar.innerHTML = holdings.map((h, i) => {
+    const pct = totalUSD > 0 ? (h.usd / totalUSD * 100).toFixed(2) : 0;
+    const col = ALLOC_COLORS[i % ALLOC_COLORS.length];
+    return `<div style="width:${pct}%;background:${col};transition:width .4s ease" title="${h.t}: ${pct}%"></div>`;
+  }).join('');
+
+  // Allocation rows
+  rows.innerHTML = holdings.map((h, i) => {
+    const pct = totalUSD > 0 ? (h.usd / totalUSD * 100).toFixed(1) : 0;
+    const col = ALLOC_COLORS[i % ALLOC_COLORS.length];
+    const p   = PRICES[h.t];
+    const barW = Math.max(2, parseFloat(pct));
+    return `<div style="display:flex;align-items:center;gap:10px">
+      <div style="width:28px;height:28px;border-radius:8px;background:${p?.color||col};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0">${p?.symbol||h.t[0]}</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:12px;font-weight:700">${h.t}</span>
+          <span style="font-size:12px;font-weight:700">${fmtUSD(h.usd)}</span>
+        </div>
+        <div style="height:4px;border-radius:2px;background:var(--bg3);overflow:hidden">
+          <div style="width:${barW}%;height:100%;background:${col};border-radius:2px;transition:width .4s ease"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:3px">
+          <span style="font-size:10px;color:var(--text3)">${fmtAmt(h.amt, h.t)} ${h.t}</span>
+          <span style="font-size:10px;color:var(--text3)">${pct}%</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 async function savePortfolio() {
   await Store.set('portfolio', portfolio);
   // Sync portfolio back to Supabase so admin panel stays in sync with swaps/sends
@@ -3950,6 +4012,7 @@ function refreshUI() {
   }
 
   refreshHoldings();
+  renderAllocWidget();
 }
 
 // TOP send coins shown when portfolio is empty
@@ -6430,6 +6493,7 @@ async function syncRealBalance() {
     await Store.set('portfolio', portfolio);
     refreshUI();
     buildSendChips();
+    renderAllocWidget();
   } catch(e) { console.error('syncRealBalance error', e); }
 }
 
