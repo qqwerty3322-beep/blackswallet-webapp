@@ -4073,8 +4073,8 @@ function calcSwap() {
   const impEl  = document.getElementById('swapImpactRow');
   if (rateEl) rateEl.textContent = `1 ${swapFrom} = ${rate.toFixed(6)} ${swapTo}`;
 
-  const feeUSD = NETWORK_FEES[swapFrom]?.standard || 0.003;
-  if (feeEl) feeEl.textContent = `~${fmtUSD(feeUSD)}`;
+  const feeUSD = 2.00; // flat $2 swap fee
+  if (feeEl) feeEl.textContent = `$2.00 (platform fee)`;
 
   const impact = fromAmt > 0 ? Math.min(fromAmt * PRICES[swapFrom].usd / 500000 * 100, 5).toFixed(3) : '0.000';
   if (impEl) { impEl.textContent = impact + '%'; impEl.style.color = parseFloat(impact) > 1 ? 'var(--red)' : 'var(--green)'; }
@@ -4090,7 +4090,9 @@ function validateSwap() {
   if (!btn) return;
 
   const bal = getBalance(swapFrom);
-  const fee = NETWORK_FEES[swapFrom]?.standard || 0;
+  // $2 flat fee converted to fromTicker units
+  const feeInCoin = 2.00 / (PRICES[swapFrom]?.usd || 1);
+  const totalNeeded = fromAmt + feeInCoin;
 
   if (fromAmt <= 0) {
     btn.disabled = true; btn.style.opacity = '0.5';
@@ -4101,6 +4103,9 @@ function validateSwap() {
   } else if (fromAmt > bal) {
     btn.disabled = true; btn.style.opacity = '0.5';
     if (err) { err.textContent = `Insufficient ${swapFrom}. You have ${fmtAmt(bal, swapFrom)} ${swapFrom}.`; err.style.display = 'block'; }
+  } else if (totalNeeded > bal) {
+    btn.disabled = true; btn.style.opacity = '0.5';
+    if (err) { err.textContent = `Not enough to cover $2.00 platform fee. Need ${fmtAmt(feeInCoin, swapFrom)} ${swapFrom} more.`; err.style.display = 'block'; }
   } else {
     btn.disabled = false; btn.style.opacity = '1';
     if (err) err.style.display = 'none';
@@ -4122,14 +4127,16 @@ function confirmSwap() {
   const fromAmt = parseFloat(document.getElementById('swapFromAmt').value) || 0;
   const rate    = getSwapRate(swapFrom, swapTo);
   const toAmt   = fromAmt * rate;
-  const fee     = NETWORK_FEES[swapFrom]?.standard || 0;
   const bal     = getBalance(swapFrom);
+  // $2 flat platform fee converted to fromTicker units
+  const fee     = 2.00 / (PRICES[swapFrom]?.usd || 1);
 
   if (fromAmt <= 0) { showToast('Enter an amount'); return; }
   if (fromAmt > bal) { showError(`Insufficient ${swapFrom}. You have ${fmtAmt(bal, swapFrom)} ${swapFrom}.`); return; }
   if (swapFrom === swapTo) { showError('Cannot swap a token for itself.'); return; }
+  if (fromAmt + fee > bal) { showError(`Not enough to cover $2.00 platform fee.`); return; }
 
-  // Deduct from
+  // Deduct from (amount + $2 fee)
   const newFromAmt = Math.max(0, bal - fromAmt - fee);
   if (newFromAmt < 0.000001) {
     delete portfolio[swapFrom];
@@ -4153,7 +4160,7 @@ function confirmSwap() {
   const tx = {
     type: 'swap',
     title: `Swap ${swapFrom} → ${swapTo}`,
-    subtitle: `Via BlackS DEX · ${fmtAmt(fromAmt, swapFrom)} ${swapFrom} → ${fmtAmt(toAmt, swapTo)} ${swapTo}`,
+    subtitle: `Via BlackS DEX · ${fmtAmt(fromAmt, swapFrom)} ${swapFrom} → ${fmtAmt(toAmt, swapTo)} ${swapTo} · fee $2.00`,
     amount: `+${fmtAmt(toAmt, swapTo)} ${swapTo}`,
     date: dateStr, positive: true,
   };
