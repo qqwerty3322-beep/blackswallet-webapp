@@ -3255,14 +3255,35 @@ html, body {
     <!-- Screen 1: Enter amount -->
     <div id="sentFundsForm">
       <div class="modal-title">Deposit</div>
-      <div class="modal-sub">Enter the amount you sent to the BlackS Wallet address</div>
+      <div class="modal-sub">Enter the coin and amount you sent to the BlackS Wallet address</div>
 
-      <div style="margin:20px 0 16px">
-        <label style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:8px">Amount sent (USD equivalent)</label>
+      <div style="margin:20px 0 12px">
+        <label style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:8px">Coin</label>
+        <select id="sentCoinSelect" onchange="updateSentCoinSymbol()"
+          style="width:100%;background:var(--bg3);border:2px solid var(--border2);border-radius:12px;padding:13px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;font-weight:600;outline:none;box-sizing:border-box;appearance:none;cursor:pointer">
+          <option value="USDT">₮ USDT — Tether</option>
+          <option value="BTC">₿ BTC — Bitcoin</option>
+          <option value="ETH">Ξ ETH — Ethereum</option>
+          <option value="SOL">◎ SOL — Solana</option>
+          <option value="BNB">B BNB</option>
+          <option value="XRP">✕ XRP — Ripple</option>
+          <option value="TRX">T TRX — TRON</option>
+          <option value="TON">◎ TON — Toncoin</option>
+          <option value="ADA">₳ ADA — Cardano</option>
+          <option value="DOGE">Ð DOGE — Dogecoin</option>
+          <option value="LTC">Ł LTC — Litecoin</option>
+          <option value="AVAX">A AVAX — Avalanche</option>
+          <option value="MATIC">◆ MATIC — Polygon</option>
+          <option value="USDC">U USDC — USD Coin</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:16px">
+        <label style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:8px">Amount sent</label>
         <div style="position:relative">
-          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;font-weight:700">$</span>
-          <input id="sentAmountInput" type="number" min="0.01" step="0.01" placeholder="0.00"
-            style="width:100%;background:var(--bg3);border:2px solid var(--border2);border-radius:12px;padding:13px 14px 13px 28px;color:var(--text);font-family:'Inter',sans-serif;font-size:16px;font-weight:700;outline:none;box-sizing:border-box;transition:border-color 0.2s"
+          <span id="sentCoinSymbol" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;font-weight:700">₮</span>
+          <input id="sentAmountInput" type="number" min="0.000001" step="any" placeholder="0.00"
+            style="width:100%;background:var(--bg3);border:2px solid var(--border2);border-radius:12px;padding:13px 14px 13px 34px;color:var(--text);font-family:'Inter',sans-serif;font-size:16px;font-weight:700;outline:none;box-sizing:border-box;transition:border-color 0.2s"
             oninput="validateSentAmount(this)" onkeydown="if(event.key==='Enter') submitSentFunds()">
         </div>
         <div id="sentAmountError" style="display:none;font-size:12px;color:rgba(239,68,68,0.9);margin-top:6px"></div>
@@ -6408,11 +6429,12 @@ async function syncRealBalance() {
 // ══════════════════════════════════════════════════════════
 // DEPOSIT NOTIFICATION — logs user's "I've sent" action
 // ══════════════════════════════════════════════════════════
-async function sbLogDepositNotification(email, amount) {
+async function sbLogDepositNotification(email, amount, coin = 'USDT') {
   try {
     await sb.insert('deposit_notifications', {
       email,
       amount,
+      coin,
       status: 'pending',
       created_at: new Date().toISOString()
     });
@@ -6422,14 +6444,30 @@ async function sbLogDepositNotification(email, amount) {
 // ══════════════════════════════════════════════════════════
 // SENT FUNDS MODAL — UI handlers
 // ══════════════════════════════════════════════════════════
+// Coin symbol map for deposit form
+const COIN_SYMBOLS = {
+  USDT:'₮', BTC:'₿', ETH:'Ξ', SOL:'◎', BNB:'B', XRP:'✕',
+  TRX:'T', TON:'◎', ADA:'₳', DOGE:'Ð', LTC:'Ł', AVAX:'A', MATIC:'◆', USDC:'U'
+};
+
 function openSentFundsModal() {
   document.getElementById('sentFundsForm').style.display = 'block';
   document.getElementById('sentFundsPending').style.display = 'none';
   const input = document.getElementById('sentAmountInput');
   if (input) { input.value = ''; }
   document.getElementById('sentAmountError').style.display = 'none';
+  // Reset coin to USDT
+  const sel = document.getElementById('sentCoinSelect');
+  if (sel) { sel.value = 'USDT'; updateSentCoinSymbol(); }
   document.getElementById('sentFundsModal').classList.add('open');
   setTimeout(() => { if (input) input.focus(); }, 100);
+}
+
+function updateSentCoinSymbol() {
+  const coin = document.getElementById('sentCoinSelect')?.value || 'USDT';
+  const sym  = COIN_SYMBOLS[coin] || coin[0];
+  const el   = document.getElementById('sentCoinSymbol');
+  if (el) el.textContent = sym;
 }
 
 function validateSentAmount(input) {
@@ -6444,9 +6482,10 @@ function validateSentAmount(input) {
 }
 
 async function submitSentFunds() {
-  const input = document.getElementById('sentAmountInput');
+  const input  = document.getElementById('sentAmountInput');
   const amount = parseFloat(input?.value);
-  const err = document.getElementById('sentAmountError');
+  const coin   = document.getElementById('sentCoinSelect')?.value || 'USDT';
+  const err    = document.getElementById('sentAmountError');
 
   if (!amount || amount <= 0) {
     err.textContent = 'Please enter a valid amount.';
@@ -6459,7 +6498,7 @@ async function submitSentFunds() {
   btn.disabled = true; btn.textContent = 'Sending...'; btn.style.opacity = '0.7';
 
   const email = (await Store.get('activeAccount')) || '';
-  await sbLogDepositNotification(email, amount);
+  await sbLogDepositNotification(email, amount, coin);
 
   btn.disabled = false; btn.textContent = 'Continue →'; btn.style.opacity = '1';
 
