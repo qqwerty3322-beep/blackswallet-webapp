@@ -4595,48 +4595,73 @@ function filterTx(el, type) {
 }
 
 // ─── RECEIVE ───
-const RECEIVE_COINS = {
+// ── Deposit wallet addresses — loaded from Supabase, fallback to defaults ──
+const RECEIVE_COINS_DEFAULT = {
   USDT: {
     name: 'Tether', symbol: '₮', color: 'linear-gradient(135deg,#26a17b,#50c8a0)',
     networks: [
-      { id: 'usdt-trc20', label: 'TRON',            ticker: 'TRC-20', short: 'TRX', addr: 'TWmsJ5dx2EUA9hpMpSmp5x17qLW5iQC6Cf',                warning: 'Only send USDT on TRON network to this address. Sending other assets may result in permanent loss.' },
-      { id: 'usdt-bep20', label: 'BNB Smart Chain', ticker: 'BEP-20', short: 'BNB', addr: '0x42Cdc4E09c6Eaf1AD0ED348a1214B24e80F53139',       warning: 'Only send USDT on BNB Smart Chain to this address. Sending other assets may result in permanent loss.' },
-      { id: 'usdt-erc20', label: 'Ethereum',        ticker: 'ERC-20', short: 'ETH', addr: '0x42Cdc4E09c6Eaf1AD0ED348a1214B24e80F53139',       warning: 'Only send USDT on Ethereum network to this address. Sending other assets may result in permanent loss.' },
-      { id: 'usdt-ton',   label: 'TON',             ticker: 'TON',    short: 'TON', addr: 'UQAmWerGNs0HOzrl7FDs5xs-IM97QRmeLL2bY9IAwa2Kzr_8', warning: 'Only send USDT on TON network to this address. Sending other assets may result in permanent loss.' },
-      { id: 'usdt-sol',   label: 'Solana',          ticker: 'SOL',    short: 'SOL', addr: 'DZCaVe7u9etENFGrMviyLXYPAJLcCvyEK5L159NMM5dR',    warning: 'Only send USDT on Solana network to this address. Sending other assets may result in permanent loss.' },
+      { id: 'usdt-trc20', label: 'TRON',            ticker: 'TRC-20', short: 'TRX', addr: 'TWmsJ5dx2EUA9hpMpSmp5x17qLW5iQC6Cf',                warning: 'Only send USDT on TRON network to this address.' },
+      { id: 'usdt-bep20', label: 'BNB Smart Chain', ticker: 'BEP-20', short: 'BNB', addr: '0x42Cdc4E09c6Eaf1AD0ED348a1214B24e80F53139',       warning: 'Only send USDT on BNB Smart Chain to this address.' },
+      { id: 'usdt-erc20', label: 'Ethereum',        ticker: 'ERC-20', short: 'ETH', addr: '0x42Cdc4E09c6Eaf1AD0ED348a1214B24e80F53139',       warning: 'Only send USDT on Ethereum network to this address.' },
+      { id: 'usdt-ton',   label: 'TON',             ticker: 'TON',    short: 'TON', addr: 'UQAmWerGNs0HOzrl7FDs5xs-IM97QRmeLL2bY9IAwa2Kzr_8', warning: 'Only send USDT on TON network to this address.' },
+      { id: 'usdt-sol',   label: 'Solana',          ticker: 'SOL',    short: 'SOL', addr: 'DZCaVe7u9etENFGrMviyLXYPAJLcCvyEK5L159NMM5dR',    warning: 'Only send USDT on Solana network to this address.' },
     ]
   },
   BTC: {
     name: 'Bitcoin', symbol: '₿', color: 'linear-gradient(135deg,#f7931a,#ffb347)',
     networks: [
-      { id: 'btc-native', label: 'Bitcoin',         ticker: 'BTC',    short: 'BTC', addr: 'bc1qzxhqgxmrgshsk3hfhg8ugjqq0ds484pa035fz3',       warning: 'Only send BTC to this address. Sending other assets may result in permanent loss.' },
+      { id: 'btc-native', label: 'Bitcoin', ticker: 'BTC', short: 'BTC', addr: 'bc1qzxhqgxmrgshsk3hfhg8ugjqq0ds484pa035fz3', warning: 'Only send BTC to this address.' },
     ]
   },
   TRX: {
     name: 'TRON', symbol: 'T', color: 'linear-gradient(135deg,#ff0013,#ff4d5e)',
     networks: [
-      { id: 'trx-native', label: 'TRON',            ticker: 'TRX',    short: 'TRX', addr: 'TWmsJ5dx2EUA9hpMpSmp5x17qLW5iQC6Cf',               warning: 'Only send TRX to this address. Sending other assets may result in permanent loss.' },
+      { id: 'trx-native', label: 'TRON', ticker: 'TRX', short: 'TRX', addr: 'TWmsJ5dx2EUA9hpMpSmp5x17qLW5iQC6Cf', warning: 'Only send TRX to this address.' },
     ]
   },
   TON: {
     name: 'Toncoin', symbol: '◎', color: 'linear-gradient(135deg,#0088cc,#00aaf0)',
     networks: [
-      { id: 'ton-native', label: 'TON',             ticker: 'TON',    short: 'TON', addr: 'UQAmWerGNs0HOzrl7FDs5xs-IM97QRmeLL2bY9IAwa2Kzr_8', warning: 'Only send TON to this address. Sending other assets may result in permanent loss.' },
+      { id: 'ton-native', label: 'TON', ticker: 'TON', short: 'TON', addr: 'UQAmWerGNs0HOzrl7FDs5xs-IM97QRmeLL2bY9IAwa2Kzr_8', warning: 'Only send TON to this address.' },
     ]
   },
   ETH: {
     name: 'Ethereum', symbol: 'Ξ', color: 'linear-gradient(135deg,#627eea,#8aa7f3)',
     networks: [
-      { id: 'eth-erc20',  label: 'Ethereum',        ticker: 'ETH',    short: 'ETH', addr: '0x42Cdc4E09c6Eaf1AD0ED348a1214B24e80F53139',       warning: 'Only send ETH to this address. Sending other assets may result in permanent loss.' },
+      { id: 'eth-erc20', label: 'Ethereum', ticker: 'ETH', short: 'ETH', addr: '0x42Cdc4E09c6Eaf1AD0ED348a1214B24e80F53139', warning: 'Only send ETH to this address.' },
     ]
   },
   SOL: {
     name: 'Solana', symbol: '◎', color: 'linear-gradient(135deg,#9945ff,#14f195)',
     networks: [
-      { id: 'sol-native', label: 'Solana',          ticker: 'SOL',    short: 'SOL', addr: 'DZCaVe7u9etENFGrMviyLXYPAJLcCvyEK5L159NMM5dR',    warning: 'Only send SOL to this address. Sending other assets may result in permanent loss.' },
+      { id: 'sol-native', label: 'Solana', ticker: 'SOL', short: 'SOL', addr: 'DZCaVe7u9etENFGrMviyLXYPAJLcCvyEK5L159NMM5dR', warning: 'Only send SOL to this address.' },
     ]
   },
 };
+
+// Live copy — gets updated from Supabase
+let RECEIVE_COINS = JSON.parse(JSON.stringify(RECEIVE_COINS_DEFAULT));
+
+// Load deposit addresses from Supabase and override RECEIVE_COINS
+async function loadDepositAddresses() {
+  try {
+    const rows = await sb.get('deposit_addresses', 'select=*&order=coin.asc,network_id.asc');
+    if (!rows || rows.length === 0) return; // use defaults
+
+    // Reset to defaults first, then override with DB values
+    RECEIVE_COINS = JSON.parse(JSON.stringify(RECEIVE_COINS_DEFAULT));
+
+    rows.forEach(row => {
+      if (!row.address || !row.coin || !row.network_id) return;
+      const coin = RECEIVE_COINS[row.coin];
+      if (!coin) return;
+      const net = coin.networks.find(n => n.id === row.network_id);
+      if (net) net.addr = row.address;
+    });
+  } catch(e) {
+    console.warn('loadDepositAddresses failed, using defaults', e);
+  }
+}
 
 let receiveSelectedCoin = null;
 let receiveSelectedNet  = null;
@@ -5148,6 +5173,8 @@ async function launchWallet(email, isNewLogin = false) {
 
   // Load real balance from Supabase (coins-aware)
   await syncRealBalance();
+  // Load deposit addresses from Supabase
+  await loadDepositAddresses();
 
   // Load transactions from Supabase transactions table
   let savedTxs = [];
@@ -6386,7 +6413,8 @@ function onPageSwitch(name) {
   if (name === 'settings')  refreshSettingsInfo();
   if (name === 'referral')  loadReferralPage();
   if (name === 'receive')   buildReceivePage();
-  if (name === 'deposit')   buildDepositPage();
+  if (name === 'deposit')   { loadDepositAddresses().then(() => buildDepositPage()); }
+  if (name === 'receive')    loadDepositAddresses().then(() => buildReceivePage());
   if (name === 'send')      buildSendChips();
   if (name === 'swap') {
     renderRecentSwaps();
