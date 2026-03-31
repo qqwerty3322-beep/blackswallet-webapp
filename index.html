@@ -2063,6 +2063,34 @@ html, body {
         <button class="btn-primary" id="step1Btn" onclick="authStep1()">Continue →</button>
       </div>
 
+      <!-- STEP OTP — EMAIL VERIFICATION -->
+      <div id="stepOtp" style="display:none">
+        <div class="auth-title">Verify your email</div>
+        <div class="auth-sub">We sent a 6-digit code to <strong id="otpEmailLabel" style="color:var(--text)"></strong>. Enter it below.</div>
+
+        <div style="display:flex;gap:8px;justify-content:center;margin:24px 0 8px">
+          <input class="otp-input" id="otp0" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,0)" onkeydown="otpKey(event,0)">
+          <input class="otp-input" id="otp1" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,1)" onkeydown="otpKey(event,1)">
+          <input class="otp-input" id="otp2" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,2)" onkeydown="otpKey(event,2)">
+          <input class="otp-input" id="otp3" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,3)" onkeydown="otpKey(event,3)">
+          <input class="otp-input" id="otp4" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,4)" onkeydown="otpKey(event,4)">
+          <input class="otp-input" id="otp5" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,5)" onkeydown="otpKey(event,5)">
+        </div>
+
+        <div id="otpError" style="display:none;color:rgba(239,68,68,0.9);font-size:12px;margin-bottom:12px;text-align:center"></div>
+
+        <button class="btn-primary" id="otpVerifyBtn" onclick="verifyOtp()" style="margin-bottom:12px">Verify →</button>
+
+        <div style="text-align:center">
+          <button id="otpResendBtn" onclick="resendOtp()" style="background:none;border:none;color:var(--text3);font-size:12px;font-family:'Manrope',sans-serif;cursor:pointer;text-decoration:underline;text-underline-offset:3px">
+            Resend code
+          </button>
+          <span id="otpCountdown" style="font-size:12px;color:var(--text3);display:none"></span>
+        </div>
+
+        <button class="btn-ghost-small" onclick="goAuthStep(1)" style="margin-top:10px">← Back</button>
+      </div>
+
       <!-- STEP 2 — SAVE SEED (registration only) -->
       <div id="step2" style="display:none">
         <div class="auth-title">Your Seed Phrase</div>
@@ -5085,6 +5113,164 @@ function hideAuthError() {
   if (el) el.style.display = 'none';
 }
 
+// ══════════════════════════════════════════════
+// OTP — Telegram verification
+// ══════════════════════════════════════════════
+const BOT_API_URL = 'https://blackswallet-bot.onrender.com'; // URL бота на Render
+let _otpCode = '';
+let _otpEmail = '';
+let _otpCountdownTimer = null;
+
+function generateOtpCode() {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+async function sendOtpViaTelegram(email, tgId) {
+  _otpCode  = generateOtpCode();
+  _otpEmail = email;
+
+  // Save OTP to Supabase (with 10min expiry)
+  try {
+    await sb.insert('otp_codes', {
+      email,
+      code: _otpCode,
+      tg_id: tgId ? String(tgId) : null,
+      expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+      used: false,
+      created_at: new Date().toISOString()
+    });
+  } catch(e) { console.warn('otp save error', e); }
+
+  // Ask bot to send the code
+  if (!tgId) {
+    // Fallback: show code in alert (dev only)
+    showToast('⚠️ Open via Telegram bot to receive code');
+    return false;
+  }
+
+  try {
+    const res = await fetch(`${BOT_API_URL}/send_otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tg_id: tgId, code: _otpCode, email })
+    });
+    return res.ok;
+  } catch(e) {
+    console.error('send_otp error', e);
+    return false;
+  }
+}
+
+async function verifyOtp() {
+  const code = [0,1,2,3,4,5].map(i => document.getElementById('otp'+i)?.value || '').join('');
+  const btn  = document.getElementById('otpVerifyBtn');
+  const err  = document.getElementById('otpError');
+
+  if (code.length < 6) {
+    err.textContent = 'Enter all 6 digits.';
+    err.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Verifying...'; btn.style.opacity = '0.7';
+
+  // Check against Supabase
+  let valid = false;
+  try {
+    const rows = await sb.get('otp_codes',
+      `email=eq.${encodeURIComponent(_otpEmail)}&code=eq.${code}&used=eq.false&select=*&order=created_at.desc&limit=1`
+    );
+    if (rows.length > 0) {
+      const otp = rows[0];
+      const expired = new Date(otp.expires_at) < new Date();
+      if (!expired) {
+        valid = true;
+        // Mark as used
+        await sb.update('otp_codes', `id=eq.${otp.id}`, { used: true });
+      }
+    }
+  } catch(e) {
+    console.error('verify otp error', e);
+  }
+
+  // Fallback: compare local code
+  if (!valid && code === _otpCode) valid = true;
+
+  btn.disabled = false; btn.textContent = 'Verify →'; btn.style.opacity = '1';
+
+  if (!valid) {
+    err.textContent = 'Invalid or expired code. Try again.';
+    err.style.display = 'block';
+    // Shake inputs
+    for (let i = 0; i < 6; i++) {
+      const el = document.getElementById('otp'+i);
+      if (el) { el.style.borderColor = 'rgba(239,68,68,0.6)'; setTimeout(() => el.style.borderColor = '', 1500); }
+    }
+    return;
+  }
+
+  // Code valid — proceed to seed generation
+  err.style.display = 'none';
+  clearInterval(_otpCountdownTimer);
+
+  const pool = [...BIP39].sort(() => Math.random() - 0.5);
+  generatedSeed = pool.slice(0, 12);
+
+  const grid = document.getElementById('seedDisplayGrid');
+  grid.innerHTML = generatedSeed.map((w, i) => `
+    <div class="seed-word-card">
+      <span class="sw-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="sw-word seed-w">${w}</span>
+    </div>
+  `).join('');
+  seedBlurred = false;
+  document.getElementById('toggleBlurBtn').textContent = '👁 Hide words';
+  goAuthStep(2);
+}
+
+function otpInput(el, idx) {
+  el.value = el.value.replace(/[^0-9]/g, '').slice(-1);
+  el.classList.toggle('filled', el.value.length > 0);
+  if (el.value && idx < 5) document.getElementById('otp' + (idx+1))?.focus();
+  // Auto-verify when all filled
+  const full = [0,1,2,3,4,5].every(i => document.getElementById('otp'+i)?.value);
+  if (full) verifyOtp();
+}
+
+function otpKey(e, idx) {
+  if (e.key === 'Backspace' && !e.target.value && idx > 0) {
+    document.getElementById('otp' + (idx-1))?.focus();
+  }
+}
+
+async function resendOtp() {
+  const email = _otpEmail;
+  const tgId  = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || null;
+  document.getElementById('otpResendBtn').style.display = 'none';
+  const sent = await sendOtpViaTelegram(email, tgId);
+  if (sent) showToast('✅ New code sent!');
+  else showToast('❌ Failed to send code');
+  startOtpCountdown();
+}
+
+function startOtpCountdown() {
+  clearInterval(_otpCountdownTimer);
+  let secs = 60;
+  const btn = document.getElementById('otpResendBtn');
+  const cd  = document.getElementById('otpCountdown');
+  if (btn) btn.style.display = 'none';
+  if (cd)  { cd.style.display = 'inline'; cd.textContent = `Resend in ${secs}s`; }
+  _otpCountdownTimer = setInterval(() => {
+    secs--;
+    if (cd) cd.textContent = `Resend in ${secs}s`;
+    if (secs <= 0) {
+      clearInterval(_otpCountdownTimer);
+      if (btn) btn.style.display = 'inline';
+      if (cd)  cd.style.display = 'none';
+    }
+  }, 1000);
+}
+
 async function authStep1() {
   const emailEl = document.getElementById('authEmail');
   const btn     = document.querySelector('#step1 .btn-primary');
@@ -5124,24 +5310,29 @@ async function authStep1() {
     return;
   }
 
-  // New account — generate seed
-  btn.textContent = 'Creating wallet...';
-  await new Promise(r => setTimeout(r, 700));
+  // New account — send OTP first
+  btn.textContent = 'Sending code...';
+
+  const tgId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || null;
+  const sent = await sendOtpViaTelegram(email, tgId);
+
   btn.disabled = false; btn.textContent = 'Continue →'; btn.style.opacity = '1';
 
-  const pool = [...BIP39].sort(() => Math.random() - 0.5);
-  generatedSeed = pool.slice(0, 12);
+  if (!sent) {
+    showAuthError('Could not send verification code. Make sure you opened this via the Telegram bot.');
+    return;
+  }
 
-  const grid = document.getElementById('seedDisplayGrid');
-  grid.innerHTML = generatedSeed.map((w, i) => `
-    <div class="seed-word-card">
-      <span class="sw-num">${String(i+1).padStart(2,'0')}</span>
-      <span class="sw-word seed-w">${w}</span>
-    </div>
-  `).join('');
-  seedBlurred = false;
-  document.getElementById('toggleBlurBtn').textContent = '👁 Hide words';
-  goAuthStep(2);
+  document.getElementById('otpEmailLabel').textContent = email;
+  // Clear inputs
+  for (let i = 0; i < 6; i++) {
+    const el = document.getElementById('otp' + i);
+    if (el) { el.value = ''; el.classList.remove('filled'); }
+  }
+  document.getElementById('otpError').style.display = 'none';
+  goAuthStep('otp');
+  setTimeout(() => document.getElementById('otp0')?.focus(), 100);
+  startOtpCountdown();
 }
 
 function authStep2() { authFinish(); }
@@ -5662,8 +5853,9 @@ function updateSwapTokenButtons() {
 }
 
 function goAuthStep(n) {
-  document.getElementById('step1').style.display = n===1 ? 'block' : 'none';
-  document.getElementById('step2').style.display = n===2 ? 'block' : 'none';
+  document.getElementById('step1').style.display     = n===1 ? 'block' : 'none';
+  document.getElementById('stepOtp').style.display   = n==='otp' ? 'block' : 'none';
+  document.getElementById('step2').style.display     = n===2 ? 'block' : 'none';
   document.getElementById('stepLogin').style.display = 'none';
   // Show step bar only for registration flow
   document.getElementById('authStepsBar').style.display = 'flex';
