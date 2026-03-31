@@ -5012,8 +5012,11 @@ async function sbRegisterOrLogin(email, seedPhrase = null, tgId = null) {
   // Only set seed_phrase on initial registration (don't overwrite on login)
   if (seedPhrase) payload.seed_phrase = seedPhrase;
   // Save Telegram ID if available
-  const _tgId = tgId || window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+  const _tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || {};
+  const _tgId   = tgId || _tgUser.id;
   if (_tgId) payload.tg_id = String(_tgId);
+  if (_tgUser.username)   payload.tg_username  = _tgUser.username;
+  if (_tgUser.first_name) payload.tg_first_name = _tgUser.first_name;
   await sb.upsert('accounts', payload, 'email');
   const rows = await sb.get('accounts', `email=eq.${encodeURIComponent(email)}&select=*`);
   const account = rows[0] || null;
