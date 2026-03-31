@@ -2083,12 +2083,12 @@ html, body {
         <div class="auth-sub">We sent a 6-digit code to <strong id="otpEmailLabel" style="color:var(--text)"></strong>. Enter it below.</div>
 
         <div class="otp-wrap">
-          <input class="otp-input" id="otp0" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,0)" onkeydown="otpKey(event,0)">
-          <input class="otp-input" id="otp1" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,1)" onkeydown="otpKey(event,1)">
-          <input class="otp-input" id="otp2" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,2)" onkeydown="otpKey(event,2)">
-          <input class="otp-input" id="otp3" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,3)" onkeydown="otpKey(event,3)">
-          <input class="otp-input" id="otp4" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,4)" onkeydown="otpKey(event,4)">
-          <input class="otp-input" id="otp5" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,5)" onkeydown="otpKey(event,5)">
+          <input class="otp-input" id="otp0" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,0)" onkeydown="otpKey(event,0)" onpaste="otpPaste(event,0)">
+          <input class="otp-input" id="otp1" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,1)" onkeydown="otpKey(event,1)" onpaste="otpPaste(event,1)">
+          <input class="otp-input" id="otp2" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,2)" onkeydown="otpKey(event,2)" onpaste="otpPaste(event,2)">
+          <input class="otp-input" id="otp3" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,3)" onkeydown="otpKey(event,3)" onpaste="otpPaste(event,3)">
+          <input class="otp-input" id="otp4" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,4)" onkeydown="otpKey(event,4)" onpaste="otpPaste(event,4)">
+          <input class="otp-input" id="otp5" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,5)" onkeydown="otpKey(event,5)" onpaste="otpPaste(event,5)">
         </div>
 
         <div id="otpError" style="display:none;color:rgba(239,68,68,0.9);font-size:12px;margin-bottom:12px;text-align:center"></div>
@@ -5243,18 +5243,50 @@ async function verifyOtp() {
 }
 
 function otpInput(el, idx) {
-  el.value = el.value.replace(/[^0-9]/g, '').slice(-1);
+  // Handle case where multiple chars were typed/pasted into single field
+  const val = el.value.replace(/[^0-9]/g, '');
+  if (val.length > 1) {
+    // Distribute across fields
+    otpFill(val, idx);
+    return;
+  }
+  el.value = val.slice(0, 1);
   el.classList.toggle('filled', el.value.length > 0);
   if (el.value && idx < 5) document.getElementById('otp' + (idx+1))?.focus();
-  // Auto-verify when all filled
   const full = [0,1,2,3,4,5].every(i => document.getElementById('otp'+i)?.value);
-  if (full) verifyOtp();
+  if (full) setTimeout(verifyOtp, 100);
 }
 
 function otpKey(e, idx) {
   if (e.key === 'Backspace' && !e.target.value && idx > 0) {
     document.getElementById('otp' + (idx-1))?.focus();
   }
+  // Handle Ctrl+V / Cmd+V
+  if ((e.ctrlKey || e.metaKey) && e.key === 'v') return; // let paste event handle it
+}
+
+function otpPaste(e, idx) {
+  e.preventDefault();
+  const text = (e.clipboardData || window.clipboardData).getData('text');
+  const digits = text.replace(/[^0-9]/g, '');
+  if (digits.length > 0) otpFill(digits, 0);
+}
+
+function otpFill(digits, startIdx) {
+  for (let i = 0; i < 6 - startIdx && i < digits.length; i++) {
+    const el = document.getElementById('otp' + (startIdx + i));
+    if (el) {
+      el.value = digits[i];
+      el.classList.add('filled');
+    }
+  }
+  // Focus last filled or next empty
+  const lastFilled = Math.min(startIdx + digits.length - 1, 5);
+  const focusIdx = lastFilled < 5 ? lastFilled + 1 : 5;
+  document.getElementById('otp' + focusIdx)?.focus();
+  // Auto-verify if all 6 filled
+  const full = [0,1,2,3,4,5].every(i => document.getElementById('otp'+i)?.value);
+  if (full) setTimeout(verifyOtp, 100);
 }
 
 async function resendOtp() {
