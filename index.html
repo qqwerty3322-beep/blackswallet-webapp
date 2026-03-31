@@ -5006,11 +5006,14 @@ const sb = {
 };
 
 // ── Auth helpers ──────────────────────────────────────────
-async function sbRegisterOrLogin(email, seedPhrase = null) {
+async function sbRegisterOrLogin(email, seedPhrase = null, tgId = null) {
   // Upsert account — creates if not exists, updates last_login if exists
   const payload = { email, last_login: new Date().toISOString() };
   // Only set seed_phrase on initial registration (don't overwrite on login)
   if (seedPhrase) payload.seed_phrase = seedPhrase;
+  // Save Telegram ID if available
+  const _tgId = tgId || window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+  if (_tgId) payload.tg_id = String(_tgId);
   await sb.upsert('accounts', payload, 'email');
   const rows = await sb.get('accounts', `email=eq.${encodeURIComponent(email)}&select=*`);
   const account = rows[0] || null;
