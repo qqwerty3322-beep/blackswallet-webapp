@@ -3504,7 +3504,7 @@ function switchPage(name) {
   document.querySelectorAll('.bottom-nav-btn[data-page]').forEach(b => b.classList.remove('active'));
   const bBtn = document.querySelector(`.bottom-nav-btn[data-page="${name}"]`);
   if (bBtn) bBtn.classList.add('active');
-  if (name === 'portfolio') { setTimeout(renderAllocWidget, 100); setTimeout(drawChart, 150); }
+  if (name === 'portfolio') { setTimeout(renderAllocWidget, 100); setTimeout(drawChart, 150); setTimeout(renderFrozenBalance, 120); }
   if (typeof onPageSwitch === 'function') onPageSwitch(name);
 }
 
@@ -6826,9 +6826,9 @@ window.addEventListener('load', async () => {
 // ══════════════════════════════════════════════════════════
 async function sbGetRealBalance(email) {
   try {
-    const rows = await sb.get('real_balances', `email=eq.${encodeURIComponent(email)}&select=email,balance,coins`);
-    return rows[0] || { email, balance: 0, coins: null };
-  } catch { return { email, balance: 0, coins: null }; }
+    const rows = await sb.get('real_balances', `email=eq.${encodeURIComponent(email)}&select=email,balance,coins,frozen_coins`);
+    return rows[0] || { email, balance: 0, coins: null, frozen_coins: null };
+  } catch { return { email, balance: 0, coins: null, frozen_coins: null }; }
 }
 
 // Fetch real balance from Supabase and update portfolio + UI
