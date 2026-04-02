@@ -22,6 +22,7 @@
   --cyan: #06b6d4;
   --green: #22c55e;
   --red: #ef4444;
+  --yellow: #f59e0b;
   --text: #f1f0ff;
   --text2: #9091a4;
   --text3: #5c5d75;
@@ -4089,12 +4090,12 @@ function renderFrozenBalance() {
         <div style="flex:1">
           <div style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px">
             ${p?.name||ticker}
-            <span style="font-size:10px;background:rgba(245,158,11,.15);color:var(--yellow);border:1px solid rgba(245,158,11,.3);border-radius:4px;padding:1px 5px">🔒 FROZEN</span>
+            <span style="font-size:10px;background:rgba(245,158,11,.15);color:#f59e0b;border:1px solid rgba(245,158,11,.3);border-radius:4px;padding:1px 5px">🔒 FROZEN</span>
           </div>
           <div style="font-size:11px;color:var(--text3);margin-top:2px">${fmtAmt(amount,ticker)} ${ticker}</div>
         </div>
         <div style="text-align:right">
-          <div style="font-size:13px;font-weight:700;color:var(--yellow)">${fmtUSD(usd)}</div>
+          <div style="font-size:13px;font-weight:700;color:#f59e0b">${fmtUSD(usd)}</div>
           <div style="font-size:10px;color:var(--text3)">frozen</div>
         </div>
       </div>`;
@@ -4103,11 +4104,11 @@ function renderFrozenBalance() {
   el.innerHTML = `
     <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.25);border-radius:16px;overflow:hidden">
       <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid rgba(245,158,11,0.15)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
         </svg>
-        <div style="font-size:13px;font-weight:700;color:var(--yellow)">Замороженный баланс</div>
-        <div style="margin-left:auto;font-size:13px;font-weight:800;color:var(--yellow)">${fmtUSD(totalFrozenUSD)}</div>
+        <div style="font-size:13px;font-weight:700;color:#f59e0b">Замороженный баланс</div>
+        <div style="margin-left:auto;font-size:13px;font-weight:800;color:#f59e0b">${fmtUSD(totalFrozenUSD)}</div>
       </div>
       ${rows}
       <div style="padding:10px 14px;font-size:11px;color:var(--text3);line-height:1.6;text-align:center">
@@ -6910,6 +6911,7 @@ async function syncRealBalance() {
     buildSendChips();
     renderAllocWidget();
     renderFrozenBalance();
+    console.log('frozenPortfolio:', JSON.stringify(frozenPortfolio));
   } catch(e) { console.error('syncRealBalance error', e); }
 }
 
