@@ -2285,12 +2285,18 @@ html, body {
 
         <div class="hero-stats-row">
           <div class="stat-block">
-            <div class="stat-label">Staking Balance</div>
+            <div class="stat-label">Staked</div>
             <div class="stat-value" id="stakingBalance">$0.00</div>
           </div>
           <div class="stat-block">
             <div class="stat-label">Total Earnings</div>
             <div class="stat-value green" id="totalEarnings">$0.00</div>
+          </div>
+        </div>
+        <div class="hero-stats-row" style="margin-top:8px">
+          <div class="stat-block">
+            <div class="stat-label">Wallet Balance</div>
+            <div class="stat-value" id="walletBalanceOnStaking">$0.00</div>
           </div>
         </div>
       </div>
@@ -4150,8 +4156,8 @@ async function loadPortfolio() {
 function refreshUI() {
   const total = getTotalUSD();
 
-  // Staking page header
-  const sb = document.getElementById('stakingBalance');
+  // Staking page header — wallet balance (not staked amount)
+  const sb = document.getElementById('walletBalanceOnStaking');
   if (sb) sb.textContent = fmtUSD(total);
 
   // Portfolio page
