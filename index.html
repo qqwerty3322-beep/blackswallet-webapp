@@ -5456,25 +5456,41 @@ async function authImportSeed() {
   const seedPhrase = words.join(' ');
 
   try {
-    // Look up account by seed phrase in Supabase
-    const rows = await sb.get('accounts', `seed_phrase=eq.${encodeURIComponent(seedPhrase)}&select=*`);
+    // Look up account by seed phrase — fetch all and compare locally
+    // (Supabase eq filter doesn't reliably match multi-word strings with spaces)
+    btn.textContent = 'Searching...';
+    let foundAccount = null;
 
-    if (rows && rows.length > 0) {
-      // Found — log in
-      const account = rows[0];
+    // First try: filter by first word to narrow down candidates
+    const firstWord = words[0];
+    const candidates = await sb.get('accounts',
+      `seed_phrase=ilike.*${encodeURIComponent(firstWord)}*&select=email,seed_phrase&limit=100`
+    );
+
+    if (candidates && candidates.length > 0) {
+      foundAccount = candidates.find(a => {
+        if (!a.seed_phrase) return false;
+        const stored = a.seed_phrase.trim().toLowerCase().replace(/\s+/g, ' ');
+        const input  = seedPhrase.trim().toLowerCase().replace(/\s+/g, ' ');
+        return stored === input;
+      }) || null;
+    }
+
+    if (foundAccount) {
+      // Found — log in to existing account
       btn.textContent = 'Restoring wallet...';
-      await sbRegisterOrLogin(account.email, null);
-      await Store.set('activeAccount', account.email);
-      await launchWallet(account.email, false);
+      await sbRegisterOrLogin(foundAccount.email, null);
+      await Store.set('activeAccount', foundAccount.email);
+      await launchWallet(foundAccount.email, false);
     } else {
       // Not found — create new account with this seed phrase
       btn.textContent = 'Creating wallet...';
-      // Generate a unique internal email for seed-only accounts
-      const tgId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || Date.now();
+      const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || {};
+      const tgId   = tgUser.id || Date.now();
       const internalEmail = `seed_${tgId}_${Date.now()}@blackswallet.internal`;
       await sbRegisterOrLogin(internalEmail, seedPhrase);
       await Store.set('activeAccount', internalEmail);
-      generatedSeed = words; // store for reference
+      generatedSeed = words;
       await launchWallet(internalEmail, true);
     }
   } catch(e) {
