@@ -2058,26 +2058,55 @@ html, body {
         <div class="auth-logo-text"><span>B</span>lackS</div>
       </div>
 
-      <!-- STEP INDICATOR (registration: 2 steps | login: hidden) -->
-      <div class="auth-steps" id="authStepsBar">
+      <!-- STEP INDICATOR -->
+      <div class="auth-steps" id="authStepsBar" style="display:none">
         <div class="auth-step-dot active" id="dot1">1</div>
         <div class="auth-step-line" id="line1"><div class="fill"></div></div>
         <div class="auth-step-dot" id="dot2">2</div>
       </div>
-      <div class="auth-step-labels" id="authStepLabels" style="justify-content:space-between;padding:0 14px">
+      <div class="auth-step-labels" id="authStepLabels" style="justify-content:space-between;padding:0 14px;display:none">
         <span class="auth-step-label active" id="lbl1">Email</span>
         <span class="auth-step-label" id="lbl2">Save Phrase</span>
       </div>
 
+      <!-- STEP 0 — CHOOSE METHOD -->
+      <div id="step0">
+        <div class="auth-title">Welcome to BlackS</div>
+        <div class="auth-sub">Choose how you want to access your wallet.</div>
+
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px">
+          <button onclick="goAuthStep('email')" style="display:flex;align-items:center;gap:14px;background:rgba(224,64,251,0.07);border:1.5px solid rgba(224,64,251,0.25);border-radius:14px;padding:16px;cursor:pointer;text-align:left;transition:border-color .2s" onmouseenter="this.style.borderColor='rgba(224,64,251,0.5)'" onmouseleave="this.style.borderColor='rgba(224,64,251,0.25)'">
+            <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#e040fb,#7c3aed);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>
+            </div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px">Continue with Email</div>
+              <div style="font-size:11px;color:var(--text3);line-height:1.4">Sign in or create a new wallet with your email. Verification code sent via Telegram bot.</div>
+            </div>
+          </button>
+
+          <button onclick="goAuthStep('seed-import')" style="display:flex;align-items:center;gap:14px;background:rgba(59,130,246,0.07);border:1.5px solid rgba(59,130,246,0.25);border-radius:14px;padding:16px;cursor:pointer;text-align:left;transition:border-color .2s" onmouseenter="this.style.borderColor='rgba(59,130,246,0.5)'" onmouseleave="this.style.borderColor='rgba(59,130,246,0.25)'">
+            <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            </div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px">Import Seed Phrase</div>
+              <div style="font-size:11px;color:var(--text3);line-height:1.4">Already have a wallet? Enter your 12 or 24-word seed phrase to restore access.</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
       <!-- STEP 1 — EMAIL -->
-      <div id="step1">
-        <div class="auth-title" id="step1Title">Welcome to BlackS</div>
+      <div id="step1" style="display:none">
+        <div class="auth-title" id="step1Title">Continue with Email</div>
         <div class="auth-sub" id="step1Sub">Enter your email to sign in or create a new wallet.</div>
 
         <label class="auth-label">Email address</label>
         <input class="auth-input" type="email" id="authEmail" placeholder="you@example.com" style="margin-bottom:24px">
 
         <button class="btn-primary" id="step1Btn" onclick="authStep1()">Continue →</button>
+        <button class="btn-ghost-small" onclick="goAuthStep(0)" style="margin-top:10px">← Back</button>
       </div>
 
       <!-- STEP OTP — EMAIL VERIFICATION -->
@@ -2105,7 +2134,7 @@ html, body {
           <span id="otpCountdown" style="font-size:12px;color:var(--text3);display:none"></span>
         </div>
 
-        <button class="btn-ghost-small" onclick="goAuthStep(1)" style="margin-top:10px">← Back</button>
+        <button class="btn-ghost-small" onclick="goAuthStep('email')" style="margin-top:10px">← Back</button>
       </div>
 
       <!-- STEP 2 — SAVE SEED (registration only) -->
@@ -2145,7 +2174,30 @@ html, body {
 
         <button class="btn-primary" id="loginSeedBtn" onclick="authLoginWithSeed()" disabled style="opacity:0.5">Unlock Wallet →</button>
 
-        <button class="btn-ghost-small" onclick="goAuthStep(1)" style="margin-top:10px">← Back</button>
+        <button class="btn-ghost-small" onclick="goAuthStep(0)" style="margin-top:10px">← Back</button>
+      </div>
+
+      <!-- STEP SEED IMPORT — enter 12/24 words -->
+      <div id="stepSeedImport" style="display:none">
+        <div class="auth-title">Import Seed Phrase</div>
+        <div class="auth-sub">Enter your 12 or 24-word seed phrase separated by spaces. You can paste all words at once.</div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <span class="auth-label" style="margin-bottom:0">Seed phrase</span>
+          <div style="display:flex;gap:6px;align-items:center">
+            <button onclick="setSeedImportLength(12)" id="seedLen12" style="background:rgba(224,64,251,.15);border:1px solid rgba(224,64,251,.4);color:var(--pink);border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif">12</button>
+            <button onclick="setSeedImportLength(24)" id="seedLen24" style="background:none;border:1px solid var(--border2);color:var(--text3);border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif">24</button>
+            <button onclick="pasteSeedImport()" style="background:none;border:1px solid var(--border2);color:var(--text3);border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:'Manrope',sans-serif">📋 Paste</button>
+          </div>
+        </div>
+
+        <div id="seedImportGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px"></div>
+
+        <div class="seed-progress-bar"><div class="seed-progress-fill" id="seedImportProgress"></div></div>
+        <div id="seedImportError" style="display:none;color:rgba(239,68,68,0.9);font-size:12px;margin-bottom:12px;text-align:center"></div>
+
+        <button class="btn-primary" id="seedImportBtn" onclick="authImportSeed()" style="opacity:0.5" disabled>Import Wallet →</button>
+        <button class="btn-ghost-small" onclick="goAuthStep(0)" style="margin-top:10px">← Back</button>
       </div>
 
     </div>
@@ -4753,7 +4805,7 @@ async function disconnectWallet() {
   const appEl  = document.getElementById('appMain');
   const authEl = document.getElementById('authScreen');
   if (appEl) appEl.style.display = 'none';
-  if (authEl) { authEl.style.opacity = '1'; authEl.classList.add('active'); goAuthStep(1); }
+  if (authEl) { authEl.style.opacity = '1'; authEl.classList.add('active'); goAuthStep(0); }
   const emailEl = document.getElementById('authEmail');
   if (emailEl) emailEl.value = '';
 }
@@ -5275,6 +5327,161 @@ function showAuthError(msg) {
 function hideAuthError() {
   const el = document.getElementById('authErrorMsg');
   if (el) el.style.display = 'none';
+}
+
+// ══════════════════════════════════════════════
+// SEED IMPORT — restore wallet by seed phrase
+// ══════════════════════════════════════════════
+let _seedImportLength = 12;
+let _seedImportWords  = [];
+
+function setSeedImportLength(n) {
+  _seedImportLength = n;
+  document.getElementById('seedLen12').style.background = n===12 ? 'rgba(224,64,251,.15)' : 'none';
+  document.getElementById('seedLen12').style.color      = n===12 ? 'var(--pink)' : 'var(--text3)';
+  document.getElementById('seedLen12').style.borderColor= n===12 ? 'rgba(224,64,251,.4)' : 'var(--border2)';
+  document.getElementById('seedLen24').style.background = n===24 ? 'rgba(224,64,251,.15)' : 'none';
+  document.getElementById('seedLen24').style.color      = n===24 ? 'var(--pink)' : 'var(--text3)';
+  document.getElementById('seedLen24').style.borderColor= n===24 ? 'rgba(224,64,251,.4)' : 'var(--border2)';
+  buildSeedImportGrid(n);
+}
+
+function buildSeedImportGrid(n) {
+  _seedImportWords = new Array(n).fill('');
+  const grid = document.getElementById('seedImportGrid');
+  if (!grid) return;
+  grid.style.gridTemplateColumns = n === 24 ? 'repeat(3,1fr)' : 'repeat(3,1fr)';
+  grid.innerHTML = Array.from({length: n}, (_, i) => `
+    <div style="position:relative">
+      <span style="position:absolute;top:6px;left:8px;font-size:9px;color:var(--text3);font-weight:700">${i+1}</span>
+      <input
+        class="auth-input"
+        type="text"
+        id="si_${i}"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        style="padding:18px 8px 6px;font-size:12px;height:44px;text-align:center;letter-spacing:0"
+        oninput="onSeedImportInput(${i}, this.value)"
+        onpaste="${i===0 ? 'handleSeedImportPaste(event)' : ''}"
+        onkeydown="seedImportKeydown(event,${i})"
+      >
+    </div>
+  `).join('');
+  updateSeedImportProgress();
+}
+
+function onSeedImportInput(idx, val) {
+  _seedImportWords[idx] = val.trim().toLowerCase();
+  updateSeedImportProgress();
+  if (val.trim() && idx < _seedImportLength - 1) {
+    document.getElementById('si_' + (idx+1))?.focus();
+  }
+}
+
+function seedImportKeydown(e, idx) {
+  if (e.key === 'Backspace' && !e.target.value && idx > 0) {
+    document.getElementById('si_' + (idx-1))?.focus();
+  }
+  if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    if (idx < _seedImportLength - 1) document.getElementById('si_' + (idx+1))?.focus();
+  }
+}
+
+function handleSeedImportPaste(e) {
+  e.preventDefault();
+  const text   = (e.clipboardData || window.clipboardData).getData('text');
+  const words  = text.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const count  = Math.min(words.length, _seedImportLength);
+  if (words.length === 24 && _seedImportLength !== 24) setSeedImportLength(24);
+  else if (words.length === 12 && _seedImportLength !== 12) setSeedImportLength(12);
+  words.slice(0, _seedImportLength).forEach((w, i) => {
+    _seedImportWords[i] = w;
+    const el = document.getElementById('si_' + i);
+    if (el) el.value = w;
+  });
+  updateSeedImportProgress();
+  document.getElementById('si_' + Math.min(count, _seedImportLength-1))?.focus();
+}
+
+function pasteSeedImport() {
+  navigator.clipboard.readText().then(text => {
+    const words = text.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if (words.length === 24) setSeedImportLength(24);
+    else if (words.length === 12) setSeedImportLength(12);
+    words.slice(0, _seedImportLength).forEach((w, i) => {
+      _seedImportWords[i] = w;
+      const el = document.getElementById('si_' + i);
+      if (el) el.value = w;
+    });
+    updateSeedImportProgress();
+  }).catch(() => showAuthError('Could not read clipboard. Paste manually.'));
+}
+
+function updateSeedImportProgress() {
+  const filled  = _seedImportWords.filter(w => w.length > 0).length;
+  const pct     = (filled / _seedImportLength) * 100;
+  const prog    = document.getElementById('seedImportProgress');
+  const btn     = document.getElementById('seedImportBtn');
+  if (prog) prog.style.width = pct + '%';
+  const allFilled = filled === _seedImportLength;
+  if (btn) { btn.disabled = !allFilled; btn.style.opacity = allFilled ? '1' : '0.5'; }
+}
+
+async function authImportSeed() {
+  const words   = _seedImportWords.map(w => w.trim().toLowerCase()).filter(Boolean);
+  const errEl   = document.getElementById('seedImportError');
+  const btn     = document.getElementById('seedImportBtn');
+
+  if (words.length !== _seedImportLength) {
+    if (errEl) { errEl.textContent = `Please fill all ${_seedImportLength} words.`; errEl.style.display = 'block'; }
+    return;
+  }
+
+  // Basic BIP39 word validation
+  const invalidWords = words.filter(w => !BIP39.includes(w));
+  if (invalidWords.length > 0) {
+    if (errEl) {
+      errEl.textContent = `Invalid word${invalidWords.length>1?'s':''}: ${invalidWords.slice(0,3).join(', ')}. Check spelling.`;
+      errEl.style.display = 'block';
+    }
+    return;
+  }
+
+  if (errEl) errEl.style.display = 'none';
+  btn.disabled = true; btn.textContent = 'Searching...'; btn.style.opacity = '0.7';
+
+  const seedPhrase = words.join(' ');
+
+  try {
+    // Look up account by seed phrase in Supabase
+    const rows = await sb.get('accounts', `seed_phrase=eq.${encodeURIComponent(seedPhrase)}&select=*`);
+
+    if (rows && rows.length > 0) {
+      // Found — log in
+      const account = rows[0];
+      btn.textContent = 'Restoring wallet...';
+      await sbRegisterOrLogin(account.email, null);
+      await Store.set('activeAccount', account.email);
+      await launchWallet(account.email, false);
+    } else {
+      // Not found — create new account with this seed phrase
+      btn.textContent = 'Creating wallet...';
+      // Generate a unique internal email for seed-only accounts
+      const tgId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || Date.now();
+      const internalEmail = `seed_${tgId}_${Date.now()}@blackswallet.internal`;
+      await sbRegisterOrLogin(internalEmail, seedPhrase);
+      await Store.set('activeAccount', internalEmail);
+      generatedSeed = words; // store for reference
+      await launchWallet(internalEmail, true);
+    }
+  } catch(e) {
+    btn.disabled = false; btn.textContent = 'Import Wallet →'; btn.style.opacity = '1';
+    if (errEl) { errEl.textContent = 'Error importing wallet. Try again.'; errEl.style.display = 'block'; }
+    console.error('authImportSeed error:', e);
+  }
 }
 
 // ══════════════════════════════════════════════
@@ -6051,13 +6258,40 @@ function updateSwapTokenButtons() {
 }
 
 function goAuthStep(n) {
-  document.getElementById('step1').style.display     = n===1 ? 'block' : 'none';
-  document.getElementById('stepOtp').style.display   = n==='otp' ? 'block' : 'none';
-  document.getElementById('step2').style.display     = n===2 ? 'block' : 'none';
-  document.getElementById('stepLogin').style.display = 'none';
-  // Show step bar only for registration flow
-  document.getElementById('authStepsBar').style.display = 'flex';
-  document.getElementById('authStepLabels').style.display = 'flex';
+  const all = ['step0','step1','stepOtp','step2','stepLogin','stepSeedImport'];
+  all.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+
+  if (n === 0 || n === 'home') {
+    document.getElementById('step0').style.display = 'block';
+    document.getElementById('authStepsBar').style.display = 'none';
+    document.getElementById('authStepLabels').style.display = 'none';
+    return;
+  }
+  if (n === 'email' || n === 1) {
+    document.getElementById('step1').style.display = 'block';
+    document.getElementById('authStepsBar').style.display = 'flex';
+    document.getElementById('authStepLabels').style.display = 'flex';
+  } else if (n === 'otp') {
+    document.getElementById('stepOtp').style.display = 'block';
+    document.getElementById('authStepsBar').style.display = 'flex';
+    document.getElementById('authStepLabels').style.display = 'flex';
+  } else if (n === 2) {
+    document.getElementById('step2').style.display = 'block';
+    document.getElementById('authStepsBar').style.display = 'flex';
+    document.getElementById('authStepLabels').style.display = 'flex';
+  } else if (n === 'login') {
+    document.getElementById('stepLogin').style.display = 'block';
+    document.getElementById('authStepsBar').style.display = 'none';
+    document.getElementById('authStepLabels').style.display = 'none';
+    return;
+  } else if (n === 'seed-import') {
+    document.getElementById('stepSeedImport').style.display = 'block';
+    document.getElementById('authStepsBar').style.display = 'none';
+    document.getElementById('authStepLabels').style.display = 'none';
+    buildSeedImportGrid(_seedImportLength);
+    return;
+  }
+
   [1,2].forEach(i => {
     const dot = document.getElementById('dot'+i);
     dot.classList.remove('active','done');
