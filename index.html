@@ -1593,18 +1593,34 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: var(--bg3);
-  border: 1px solid var(--border2);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(224,64,251,0.15), rgba(124,58,237,0.15));
+  border: 1.5px solid rgba(224,64,251,0.35);
   cursor: pointer;
-  margin: 4px auto;
+  margin: -10px auto;
   position: relative;
-  z-index: 1;
-  transition: all 0.2s;
+  z-index: 2;
+  transition: all 0.25s;
+  box-shadow: 0 2px 16px rgba(224,64,251,0.15);
 }
-.swap-arrow-btn:hover { border-color: rgba(224,64,251,0.4); background: rgba(224,64,251,0.08); }
+.swap-arrow-btn:hover {
+  border-color: rgba(224,64,251,0.7);
+  background: linear-gradient(135deg, rgba(224,64,251,0.25), rgba(124,58,237,0.25));
+  box-shadow: 0 4px 20px rgba(224,64,251,0.3);
+  transform: rotate(180deg) scale(1.08);
+}
+.swap-arrow-btn:active { transform: rotate(180deg) scale(0.95); }
+
+/* Hide browser default number input spinners */
+.swap-amount::-webkit-inner-spin-button,
+.swap-amount::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+.swap-amount { -moz-appearance: textfield; }
 
 .swap-info { background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 20px; }
 .swap-info-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); padding: 4px 0; }
@@ -2521,7 +2537,7 @@ html, body {
               <span id="swapFromBal">Balance: 0 SOL</span>
             </div>
             <div class="swap-box-main">
-              <input class="swap-amount" type="number" placeholder="0.00" id="swapFromAmt" oninput="calcSwap()">
+              <input class="swap-amount" type="number" placeholder="0.00" id="swapFromAmt" min="0" oninput="if(parseFloat(this.value)<0||this.value==='-')this.value='';calcSwap()">
               <button class="swap-token-btn" onclick="openTokenPicker('from')" id="swapFromBtn">
                 <span id="swapFromIcon">◎</span> <span id="swapFromTicker">SOL</span>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
@@ -2530,8 +2546,16 @@ html, body {
           </div>
 
           <button class="swap-arrow-btn" onclick="flipSwap()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="url(#swapGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <defs>
+                <linearGradient id="swapGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#e040fb"/>
+                  <stop offset="100%" stop-color="#7c3aed"/>
+                </linearGradient>
+              </defs>
+              <line x1="12" y1="2" x2="12" y2="22"/>
+              <polyline points="7 7 12 2 17 7"/>
+              <polyline points="7 17 12 22 17 17"/>
             </svg>
           </button>
 
@@ -3563,6 +3587,7 @@ function switchPage(name) {
 
 // Bottom nav helper
 function navTo(name) {
+  closeMoreMenu();
   switchPage(name);
 }
 
@@ -3585,7 +3610,7 @@ function closeMoreMenu() {
 }
 
 document.querySelectorAll('.nav-btn[data-page]').forEach(btn => {
-  btn.addEventListener('click', () => switchPage(btn.dataset.page));
+  btn.addEventListener('click', () => { closeMoreMenu(); switchPage(btn.dataset.page); });
 });
 
 // ─── TOAST ───
@@ -4338,7 +4363,8 @@ function getSwapRate(from, to) {
 }
 
 function calcSwap() {
-  const fromAmt = parseFloat(document.getElementById('swapFromAmt').value) || 0;
+  let fromAmt = parseFloat(document.getElementById('swapFromAmt').value) || 0;
+  if (fromAmt < 0) { document.getElementById('swapFromAmt').value = ''; fromAmt = 0; }
   const rate = getSwapRate(swapFrom, swapTo);
   const toAmt = fromAmt * rate;
 
@@ -4361,7 +4387,8 @@ function calcSwap() {
 }
 
 function validateSwap() {
-  const fromAmt = parseFloat(document.getElementById('swapFromAmt').value) || 0;
+  let fromAmt = parseFloat(document.getElementById('swapFromAmt').value) || 0;
+  if (fromAmt < 0) { document.getElementById('swapFromAmt').value = ''; fromAmt = 0; }
   const btn = document.getElementById('swapConfirmBtn');
   const err = document.getElementById('swapError');
   if (!btn) return;
@@ -4407,7 +4434,8 @@ function flipSwap() {
 }
 
 function confirmSwap() {
-  const fromAmt = parseFloat(document.getElementById('swapFromAmt').value) || 0;
+  let fromAmt = parseFloat(document.getElementById('swapFromAmt').value) || 0;
+  if (fromAmt < 0) { document.getElementById('swapFromAmt').value = ''; fromAmt = 0; }
   const rate    = getSwapRate(swapFrom, swapTo);
   const toAmt   = fromAmt * rate;
   const bal     = getBalance(swapFrom);
@@ -4534,20 +4562,31 @@ function validateWalletAddress(addr, ticker) {
   if (!addr || addr.length < 10) return { ok: false, msg: 'Address is too short.' };
 
   const rules = {
-    BTC:  { re: /^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,62}$/, hint: 'BTC address starts with bc1, 1 or 3' },
-    ETH:  { re: /^0x[a-fA-F0-9]{40}$/, hint: 'ETH address starts with 0x followed by 40 hex characters' },
-    BNB:  { re: /^0x[a-fA-F0-9]{40}$/, hint: 'BNB (BEP-20) address starts with 0x followed by 40 hex characters' },
-    SOL:  { re: /^[1-9A-HJ-NP-Za-km-z]{32,44}$/, hint: 'SOL address is 32-44 Base58 characters' },
-    TRX:  { re: /^T[1-9A-HJ-NP-Za-km-z]{33}$/, hint: 'TRX address starts with T and is 34 characters' },
-    TON:  { re: /^(UQ|EQ|0:)[A-Za-z0-9_\-]{46,66}$/, hint: 'TON address starts with UQ or EQ' },
+    // BTC: native segwit (bc1q/bc1p), legacy (1...), P2SH (3...)
+    BTC: {
+      re: /^(bc1[a-z0-9]{6,87}|[13][a-km-zA-HJ-NP-Z1-9]{25,34})$/,
+      hint: 'BTC address starts with bc1, 1 or 3'
+    },
+    // ETH/BNB: 0x + exactly 40 hex chars
+    ETH: { re: /^0x[a-fA-F0-9]{40}$/, hint: 'ETH address: 0x followed by 40 hex characters' },
+    BNB: { re: /^0x[a-fA-F0-9]{40}$/, hint: 'BNB address: 0x followed by 40 hex characters' },
+    // SOL: Base58, 32-44 chars, NOT starting with 1 or 3 (those are BTC)
+    SOL: {
+      re: /^[2-9A-HJ-NP-Za-km-z][1-9A-HJ-NP-Za-km-z]{31,43}$/,
+      hint: 'SOL address is 32-44 Base58 characters (does not start with 1 or 3)'
+    },
+    // TRX: starts with T, 34 chars total
+    TRX: { re: /^T[1-9A-HJ-NP-Za-km-z]{33}$/, hint: 'TRX address starts with T, 34 characters total' },
+    // TON: starts with UQ or EQ
+    TON: { re: /^(UQ|EQ)[A-Za-z0-9_-]{46}$/, hint: 'TON address starts with UQ or EQ, 48 characters total' },
+    // USDT multi-network: TRC20, ERC20/BEP20, TON only (no raw SOL — too ambiguous)
     USDT: {
-      // USDT can be on multiple networks — accept TRC20 (T...), ERC20/BEP20 (0x...), SOL, TON
-      re: /^(T[1-9A-HJ-NP-Za-km-z]{33}|0x[a-fA-F0-9]{40}|[1-9A-HJ-NP-Za-km-z]{32,44}|(UQ|EQ)[A-Za-z0-9_\-]{46,66})$/,
-      hint: 'USDT address must be valid TRC-20 (T...), ERC-20/BEP-20 (0x...), SOL or TON (UQ/EQ...)'
+      re: /^(T[1-9A-HJ-NP-Za-km-z]{33}|0x[a-fA-F0-9]{40}|(UQ|EQ)[A-Za-z0-9_-]{46}|[2-9A-HJ-NP-Za-km-z][1-9A-HJ-NP-Za-km-z]{31,43})$/,
+      hint: 'USDT: TRC-20 (T...), ERC-20/BEP-20 (0x...), TON (UQ/EQ...) or SOL address'
     },
     USDC: {
-      re: /^(0x[a-fA-F0-9]{40}|[1-9A-HJ-NP-Za-km-z]{32,44})$/,
-      hint: 'USDC address must be valid ERC-20 (0x...) or SOL address'
+      re: /^(0x[a-fA-F0-9]{40}|[2-9A-HJ-NP-Za-km-z][1-9A-HJ-NP-Za-km-z]{31,43})$/,
+      hint: 'USDC: ERC-20 (0x...) or SOL address'
     },
   };
 
