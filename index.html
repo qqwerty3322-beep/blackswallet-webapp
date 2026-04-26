@@ -5886,9 +5886,9 @@ async function launchWallet(email, isNewLogin = false) {
     if (bnav) bnav.style.display = 'flex';
 
     setTimeout(drawChart, 300);
-    ['stakingBalance','totalEarnings','portfolioTotal','portfolioPnl','portfolioRewards']
-      .forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '$0.00'; });
     refreshUI(); refreshStakingPage();
+    // Re-sync after UI shown to ensure latest data displayed
+    setTimeout(() => syncRealBalance(), 100);
 
     // Start on Wallet (portfolio) page
     switchPage('portfolio');
