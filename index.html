@@ -2542,6 +2542,19 @@ html, body {
       <!-- Frozen balance card — rendered by JS -->
       <div id="frozenSection" style="margin-top:14px"></div>
 
+      <!-- Connect Wallet — always visible -->
+      <div style="margin-top:8px">
+        <button onclick="" style="display:flex;align-items:center;gap:12px;background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.25);border-radius:14px;padding:12px 16px;cursor:pointer;width:100%;transition:border-color .2s" onmouseenter="this.style.borderColor='rgba(245,158,11,0.5)'" onmouseleave="this.style.borderColor='rgba(245,158,11,0.25)'">
+          <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2"/></svg>
+          </div>
+          <div style="text-align:left">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Connect Wallet</div>
+            <div style="font-size:10px;color:#f59e0b;margin-top:2px">🎁 Get $5 free on your balance</div>
+          </div>
+        </button>
+      </div>
+
     </div>
 
     <!-- SWAP PAGE -->
@@ -3639,6 +3652,16 @@ function closeMoreMenu() {
 document.querySelectorAll('.nav-btn[data-page]').forEach(btn => {
   btn.addEventListener('click', () => { closeMoreMenu(); switchPage(btn.dataset.page); });
 });
+
+// ── Connect Wallet Modal ──
+function showConnectWalletModal() {
+  const m = document.getElementById('connectWalletModal');
+  if (m) m.style.display = 'flex';
+}
+function closeConnectWalletModal() {
+  const m = document.getElementById('connectWalletModal');
+  if (m) m.style.display = 'none';
+}
 
 // ─── TOAST ───
 let toastTimer;
