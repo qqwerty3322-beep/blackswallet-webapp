@@ -7288,8 +7288,11 @@ function toggleSettingBool(key, el) {
   el.classList.toggle('on');
   appSettings[key] = el.classList.contains('on');
   saveSettings();
-  if (key === 'hideBalance')   applyHideBalance();
-  if (key === 'expertMode')    showToast(appSettings.expertMode ? '⚡ Expert mode on — confirmations skipped' : 'Expert mode off');
+  if (key === 'hideBalance') {
+    applyHideBalance();
+    showToast(appSettings.hideBalance ? '🔒 Balances hidden' : '👁 Balances visible');
+  }
+  if (key === 'expertMode') showToast(appSettings.expertMode ? '⚡ Expert mode on — confirmations skipped' : 'Expert mode off');
 }
 
 function saveSetting(key, value) {
@@ -7308,7 +7311,7 @@ function applyHideBalance() {
     el.style.filter = filter;
     el.style.userSelect = sel;
   });
-  showToast(hide ? '🔒 Balances hidden' : '👁 Balances visible');
+  // Toast shown only on manual toggle, not on load
 }
 
 function applyAutoLock(minutes, notify = true) {
@@ -7567,15 +7570,11 @@ window.addEventListener('load', async () => {
   const isLoggedIn    = await Store.get('isLoggedIn');
   const activeAccount = await Store.get('activeAccount');
 
-  if (isLoggedIn && activeAccount) {
-    // Auto-login — skip auth screen entirely
+  if (activeAccount) {
+    // Auto-login — always login if we have an account
     await launchWallet(activeAccount, false);
   } else {
-    // Show auth screen, prefill email if we have it
-    if (activeAccount) {
-      const el = document.getElementById('authEmail');
-      if (el) el.value = activeAccount;
-    }
+    // Fresh user — show auth screen
   }
 
   // Periodic real balance refresh
