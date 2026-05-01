@@ -1912,7 +1912,8 @@ html, body {
 #assetModal,
 #sendConfirmModal,
 #seedPhraseModal,
-#fundsNotArrivedModal {
+#fundsNotArrivedModal,
+#statusModal {
   align-items: center !important;
   padding: 16px !important;
 }
@@ -1927,6 +1928,15 @@ html, body {
   overflow-y: auto !important;
   width: 100% !important;
   max-width: 420px !important;
+}
+#statusModal .modal {
+  border-radius: 20px !important;
+  max-height: 75vh !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  max-width: 360px !important;
 }
 
 /* ── Toast: above bottom nav ── */
@@ -7912,12 +7922,12 @@ function showFundsNotArrivedInfo() {
 </div>
 
 <!-- Status Modal -->
-<div class="modal-overlay" id="statusModal">
-  <div class="modal" style="max-width:360px">
+<div class="modal-overlay" id="statusModal" style="align-items:center;justify-content:center">
+  <div class="modal" style="max-width:360px;max-height:80vh;display:flex;flex-direction:column">
     <button class="modal-close" onclick="closeModal('statusModal')">×</button>
     <div class="modal-title">Account Status</div>
     <div class="modal-sub">Based on your total portfolio value</div>
-    <div id="statusModalContent" style="margin-top:16px;max-height:60vh;overflow-y:auto"></div>
+    <div id="statusModalContent" style="margin-top:16px;overflow-y:auto;flex:1"></div>
   </div>
 </div>
 
