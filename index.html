@@ -2911,7 +2911,7 @@ html, body {
         </div>
         <div style="background:rgba(39,117,202,0.08);border:1px solid rgba(39,117,202,0.2);border-radius:14px;padding:14px;text-align:center">
           <div style="font-size:20px;margin-bottom:6px">👥</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:3px">Participants</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:3px">Spots Left</div>
           <div style="font-size:14px;font-weight:800;color:#6db3f2" id="airdropParticipants">—</div>
         </div>
       </div>
@@ -7635,7 +7635,7 @@ async function loadAirdropStats() {
       if (countHeader) {
         const total = parseInt(countHeader.split('/')[1]);
         if (!isNaN(total)) {
-          partic.textContent = total.toLocaleString();
+          partic.textContent = Math.max(0, 5000 - total).toLocaleString();
           return;
         }
       }
@@ -7644,7 +7644,8 @@ async function loadAirdropStats() {
     try {
       const allRows = await sb.get('accounts', 'select=email');
       if (Array.isArray(allRows)) {
-        partic.textContent = allRows.length.toLocaleString();
+        const displayed = Math.max(0, 5000 - allRows.length);
+        partic.textContent = displayed.toLocaleString();
         return;
       }
     } catch(e) {}
