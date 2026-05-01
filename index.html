@@ -6232,18 +6232,18 @@ async function launchWallet(email, isNewLogin = false) {
     const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || {};
     const tgId   = tgUser.id ? String(tgUser.id) : null;
     if (tgId) { // check pending referral on every login, activation guard is inside
-      const pending = await sb.get('pending_referrals', `tg_id=eq.${tgId}&select=ref_code,used&limit=1`);
-      if (pending && pending.length > 0 && !pending[0].used) {
+      const pending = await sb.get('pending_referrals', `tg_id=eq.${tgId}&used=eq.false&select=ref_code,used&limit=1`);
+      if (pending && pending.length > 0) {
         const refCode = pending[0].ref_code;
-        // Check not already activated
+        // Mark as used FIRST to prevent double activation across wallets
+        await sb.update('pending_referrals', `tg_id=eq.${tgId}`, { used: true });
+        // Check this email not already activated
         const myActivation = await sbGetMyActivation(email);
         if (!myActivation) {
           const promo = await sbGetPromoByCode(refCode);
           if (promo && promo.owner_email !== email) {
             await sbActivateCode(email, refCode);
-            // Mark pending as used
-            await sb.update('pending_referrals', `tg_id=eq.${tgId}`, { used: true });
-            console.log('Auto-activated referral code:', refCode);
+            console.log('Auto-activated referral code:', refCode, 'for', email);
           }
         }
       }
