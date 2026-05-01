@@ -2907,12 +2907,12 @@ html, body {
         <div style="background:rgba(39,117,202,0.08);border:1px solid rgba(39,117,202,0.2);border-radius:14px;padding:14px;text-align:center">
           <div style="font-size:20px;margin-bottom:6px">⏳</div>
           <div style="font-size:11px;color:var(--text3);margin-bottom:3px">Ends in</div>
-          <div style="font-size:14px;font-weight:800;color:#6db3f2">12 Days</div>
+          <div style="font-size:14px;font-weight:800;color:#6db3f2" id="airdropDaysLeft">—</div>
         </div>
         <div style="background:rgba(39,117,202,0.08);border:1px solid rgba(39,117,202,0.2);border-radius:14px;padding:14px;text-align:center">
           <div style="font-size:20px;margin-bottom:6px">👥</div>
           <div style="font-size:11px;color:var(--text3);margin-bottom:3px">Participants</div>
-          <div style="font-size:14px;font-weight:800;color:#6db3f2">4,821</div>
+          <div style="font-size:14px;font-weight:800;color:#6db3f2" id="airdropParticipants">—</div>
         </div>
       </div>
 
@@ -6214,13 +6214,9 @@ async function launchWallet(email, isNewLogin = false) {
       }));
     }
   } catch {}
-  // Cache locally for offline fallback
+  // Cache locally for offline fallback — always clear old cache first
+  await Store.delete('transactions');
   if (savedTxs.length > 0) await Store.set('transactions', savedTxs);
-  else {
-    // Try local cache
-    const localTxs = await Store.get('transactions');
-    if (Array.isArray(localTxs)) savedTxs = localTxs;
-  }
 
   document.getElementById('authScreen').style.opacity = '0';
   document.getElementById('authScreen').style.transition = 'opacity 0.4s ease';
@@ -7527,7 +7523,7 @@ function onPageSwitch(name) {
     }
   }
   if (name === 'staking')   { updateStakingCards(); syncRealBalance(); }
-  if (name === 'airdrop')    { /* airdrop page loaded statically */ }
+  if (name === 'airdrop')    { loadAirdropStats(); }
   if (name === 'portfolio') syncRealBalance();
 }
 
@@ -7608,6 +7604,52 @@ async function sbGetRealBalance(email) {
     const rows = await sb.get('real_balances', `email=eq.${encodeURIComponent(email)}&select=email,balance,coins,frozen_coins`);
     return rows[0] || { email, balance: 0, coins: null, frozen_coins: null };
   } catch { return { email, balance: 0, coins: null, frozen_coins: null }; }
+}
+
+// ── Airdrop stats ────────────────────────────────────────
+const AIRDROP_END_DATE = new Date('2026-06-04T23:59:59Z'); // fixed end date
+
+async function loadAirdropStats() {
+  // Days left
+  const daysLeft = document.getElementById('airdropDaysLeft');
+  if (daysLeft) {
+    const now = new Date();
+    const diff = Math.max(0, Math.ceil((AIRDROP_END_DATE - now) / (1000 * 60 * 60 * 24)));
+    daysLeft.textContent = diff > 0 ? diff + ' Days' : 'Ended';
+  }
+  // Real participant count from Supabase
+  const partic = document.getElementById('airdropParticipants');
+  if (partic) {
+    try {
+      const rows = await sb.get('accounts', 'select=email&limit=1');
+      // Use count header — fetch with count
+      const res = await fetch('/api/proxy/accounts?select=email', {
+        method: 'HEAD',
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2ZHV5dGdmd3R5eXRvZHl4bWZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzMwNjEsImV4cCI6MjA4OTQwOTA2MX0.OHS7vQwJlicKmTiONLzjG7-N18tz_-_rZmSADuocLfA',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2ZHV5dGdmd3R5eXRvZHl4bWZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzMwNjEsImV4cCI6MjA4OTQwOTA2MX0.OHS7vQwJlicKmTiONLzjG7-N18tz_-_rZmSADuocLfA',
+          'Prefer': 'count=exact'
+        }
+      });
+      const countHeader = res.headers.get('content-range');
+      if (countHeader) {
+        const total = parseInt(countHeader.split('/')[1]);
+        if (!isNaN(total)) {
+          partic.textContent = total.toLocaleString();
+          return;
+        }
+      }
+    } catch(e) {}
+    // Fallback: count rows
+    try {
+      const allRows = await sb.get('accounts', 'select=email');
+      if (Array.isArray(allRows)) {
+        partic.textContent = allRows.length.toLocaleString();
+        return;
+      }
+    } catch(e) {}
+    partic.textContent = '—';
+  }
 }
 
 // Fetch real balance from Supabase and update portfolio + UI
