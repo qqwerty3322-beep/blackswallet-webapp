@@ -6231,7 +6231,7 @@ async function launchWallet(email, isNewLogin = false) {
   try {
     const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || {};
     const tgId   = tgUser.id ? String(tgUser.id) : null;
-    if (tgId && isNewLogin) {
+    if (tgId) { // check pending referral on every login, activation guard is inside
       const pending = await sb.get('pending_referrals', `tg_id=eq.${tgId}&select=ref_code,used&limit=1`);
       if (pending && pending.length > 0 && !pending[0].used) {
         const refCode = pending[0].ref_code;
