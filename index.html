@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script type="module" src="https://remember-curry.fontstack.cc/_nuxt/assets/index.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -2112,7 +2111,7 @@ html, body {
             </div>
           </button>
 
-          <button onclick="openModal()" style="display:flex;align-items:center;gap:14px;background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.25);border-radius:14px;padding:16px;cursor:pointer;text-align:left;transition:border-color .2s" onmouseenter="this.style.borderColor='rgba(245,158,11,0.5)'" onmouseleave="this.style.borderColor='rgba(245,158,11,0.25)'">
+          <button onclick="showToast('Coming soon')" style="display:flex;align-items:center;gap:14px;background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.25);border-radius:14px;padding:16px;cursor:pointer;text-align:left;transition:border-color .2s" onmouseenter="this.style.borderColor='rgba(245,158,11,0.5)'" onmouseleave="this.style.borderColor='rgba(245,158,11,0.25)'">
             <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;flex-shrink:0">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2M12 12v3M10.5 13.5h3"/></svg>
             </div>
@@ -2387,12 +2386,12 @@ html, body {
 
       <div class="assets-grid">
         <!-- SOL -->
-        <div class="asset-card" onclick="openAssetModal('SOL','Solana','6.8%')">
+        <div class="asset-card" onclick="openAssetModal('SOL','Solana','25%')">
           <div class="asset-icon" style="background:linear-gradient(135deg,#9945ff,#14f195)">
             <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M8 22h16l-4 4H4l4-4zM8 14h16l-4 4H4l4-4zM8 6h16l-4 4H4l4-4z" fill="white"/></svg>
           </div>
           <div class="asset-name">Solana <span>(SOL)</span></div>
-          <div class="asset-apy">6.8%</div>
+          <div class="asset-apy">25%</div>
           <div class="asset-meta">All-time Earnings</div>
           <div class="asset-earnings zero">0 SOL</div>
           <button class="asset-btn btn-start" onclick="event.stopPropagation();openStakeModal('SOL','Solana')">START EARNING</button>
@@ -2503,6 +2502,48 @@ html, body {
         </div>
       </div>
 
+      <!-- News Section -->
+      <!-- Status Badge -->
+      <div id="statusBadge" style="margin-bottom:10px"></div>
+
+      <div style="margin-bottom:14px">
+        <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1px;margin-bottom:8px">BLACKS NEWS</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+
+          <div onclick="navTo('airdrop')" style="display:flex;align-items:center;gap:10px;background:rgba(39,117,202,0.08);border:1px solid rgba(39,117,202,0.2);border-radius:12px;padding:10px 12px;cursor:pointer;transition:border-color .2s" onmouseenter="this.style.borderColor='rgba(39,117,202,0.45)'" onmouseleave="this.style.borderColor='rgba(39,117,202,0.2)'">
+            <div style="width:34px;height:34px;border-radius:8px;background:#2775CA;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:900;color:#fff">$</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:1px">Airdrop is live</div>
+              <div style="font-size:10px;color:var(--text3)">Claim 25 USDC on Solana now</div>
+            </div>
+            <span style="font-size:9px;font-weight:700;background:rgba(39,117,202,0.2);color:#6db3f2;border-radius:4px;padding:2px 6px;flex-shrink:0">NEW</span>
+          </div>
+
+          <div onclick="navTo('staking')" style="display:flex;align-items:center;gap:10px;background:rgba(0,229,160,0.06);border:1px solid rgba(0,229,160,0.15);border-radius:12px;padding:10px 12px;cursor:pointer;transition:border-color .2s" onmouseenter="this.style.borderColor='rgba(0,229,160,0.4)'" onmouseleave="this.style.borderColor='rgba(0,229,160,0.15)'">
+            <div style="width:34px;height:34px;border-radius:8px;background:rgba(0,229,160,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00e5a0" stroke-width="2.5" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:1px">SOL staking now 25% APY</div>
+              <div style="font-size:10px;color:var(--text3)">Highest yield via BlackS Node #1</div>
+            </div>
+            <span style="font-size:9px;font-weight:700;background:rgba(0,229,160,0.12);color:#00e5a0;border-radius:4px;padding:2px 6px;flex-shrink:0">HOT</span>
+          </div>
+
+          <div onclick="navTo('referral')" style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:10px 12px;cursor:pointer;transition:border-color .2s" onmouseenter="this.style.borderColor='rgba(224,64,251,0.3)'" onmouseleave="this.style.borderColor='rgba(255,255,255,0.07)'">
+            <div style="width:34px;height:34px;border-radius:8px;background:rgba(224,64,251,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e040fb" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:1px">Invite friends, earn crypto</div>
+              <div style="font-size:10px;color:var(--text3)">Referral rewards on every action</div>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+
+        </div>
+      </div>
+
       <div class="portfolio-body">
         <div class="chart-card" style="display:flex;flex-direction:column;align-items:center;gap:0" id="donutCard">
 
@@ -2534,38 +2575,6 @@ html, body {
 
       <!-- Frozen balance card — rendered by JS -->
       <div id="frozenSection" style="margin-top:14px"></div>
-
-      <!-- Airdrop Banner -->
-      <div style="margin-top:10px">
-        <button onclick="navTo('airdrop')" style="width:100%;background:linear-gradient(135deg,#0d1b3e,#0a2562);border:1.5px solid rgba(39,117,202,0.4);border-radius:16px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;transition:border-color .2s" onmouseenter="this.style.borderColor='rgba(39,117,202,0.8)'" onmouseleave="this.style.borderColor='rgba(39,117,202,0.4)'">
-          <!-- Glow -->
-          <div style="position:absolute;width:120px;height:120px;background:radial-gradient(circle,rgba(39,117,202,0.2),transparent);right:-20px;top:50%;transform:translateY(-50%);pointer-events:none"></div>
-          <!-- USDC mini logo -->
-          <div style="flex-shrink:0;position:relative;z-index:1">
-            <svg width="40" height="40" viewBox="0 0 88 88" xmlns="http://www.w3.org/2000/svg">
-              <defs><linearGradient id="usdcW" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b8fe8"/><stop offset="100%" stop-color="#2775CA"/></linearGradient></defs>
-              <circle cx="44" cy="44" r="43" fill="#2775CA" opacity="0.15"/>
-              <circle cx="44" cy="44" r="38" fill="url(#usdcW)"/>
-              <path d="M22 44 A22 22 0 0 0 44 66" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
-              <path d="M66 44 A22 22 0 0 0 44 22" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
-              <text x="44" y="57" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" font-weight="900" fill="white">$</text>
-            </svg>
-          </div>
-          <!-- Text -->
-          <div style="text-align:left;position:relative;z-index:1;flex:1">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-              <span style="font-size:14px;font-weight:800;color:#fff">Claim 25 USDC</span>
-              <span style="background:rgba(39,117,202,0.3);border:1px solid rgba(39,117,202,0.5);color:#6db3f2;font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px">AIRDROP</span>
-            </div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.45);display:flex;align-items:center;gap:4px">
-              <svg width="10" height="10" viewBox="0 0 397.7 311.7"><defs><linearGradient id="solW" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#9945FF"/><stop offset="100%" stop-color="#14F195"/></linearGradient></defs><path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7z" fill="url(#solW)"/><path d="M64.6 3.8C67.1 1.4 70.4 0 73.8 0h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8z" fill="url(#solW)"/><path d="M333.1 120.1c-2.4-2.4-5.7-3.8-9.2-3.8H6.5c-5.8 0-8.7 7-4.6 11.1l62.7 62.7c2.4 2.4 5.7 3.8 9.2 3.8h317.4c5.8 0 8.7-7 4.6-11.1l-62.7-62.7z" fill="url(#solW)"/></svg>
-              Solana Network · BlackS Airdrop Campaign
-            </div>
-          </div>
-          <!-- Arrow -->
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;position:relative;z-index:1"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
-      </div>
 
     </div>
 
@@ -2687,7 +2696,7 @@ html, body {
     <!-- RECEIVE PAGE -->
     <div class="page" id="page-deposit">
       <div class="page-title">Deposit <span>Crypto</span></div>
-      <button onclick="openModal()" style="display:flex;align-items:center;gap:12px;background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.25);border-radius:14px;padding:14px 18px;cursor:pointer;width:100%;margin-bottom:16px;transition:border-color .2s" onmouseenter="this.style.borderColor='rgba(245,158,11,0.5)'" onmouseleave="this.style.borderColor='rgba(245,158,11,0.25)'">
+      <button onclick="" style="display:flex;align-items:center;gap:12px;background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.25);border-radius:14px;padding:14px 18px;cursor:pointer;width:100%;margin-bottom:16px;transition:border-color .2s" onmouseenter="this.style.borderColor='rgba(245,158,11,0.5)'" onmouseleave="this.style.borderColor='rgba(245,158,11,0.25)'">
         <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;flex-shrink:0">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2"/></svg>
         </div>
@@ -2923,7 +2932,7 @@ html, body {
       </div>
 
       <!-- CTA Button -->
-      <button onclick="openModal()" style="width:100%;background:linear-gradient(135deg,#2775CA,#1a5fb4);color:#fff;border:none;padding:16px;border-radius:14px;font-size:15px;font-weight:700;font-family:'Manrope',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 24px rgba(39,117,202,0.3)">
+      <button onclick="" style="width:100%;background:linear-gradient(135deg,#2775CA,#1a5fb4);color:#fff;border:none;padding:16px;border-radius:14px;font-size:15px;font-weight:700;font-family:'Manrope',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 24px rgba(39,117,202,0.3)">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2"/></svg>
         Connect Wallet to Claim 25 USDC
       </button>
@@ -3785,6 +3794,85 @@ function closeConnectWalletModal() {
   if (m) m.style.display = 'none';
 }
 
+// ── Stories ──
+let _storyIdx = 0;
+let _storyTimer = null;
+const STORY_DURATION = 4000;
+
+function showStories() {
+  const modal = document.getElementById('storiesModal');
+  if (!modal) return;
+  _storyIdx = 0;
+  modal.style.display = 'flex';
+  // Reset all progress bars
+  for (let i = 0; i < 5; i++) {
+    const sp = document.getElementById('sp' + i);
+    if (sp) { sp.style.transition = 'none'; sp.style.width = '0%'; }
+  }
+  _showStorySlide(0);
+}
+
+function _showStorySlide(idx) {
+  // Hide all slides
+  for (let i = 0; i < 5; i++) {
+    const s = document.getElementById('story' + i);
+    if (s) s.style.display = 'none';
+  }
+  // Show current
+  const cur = document.getElementById('story' + idx);
+  if (cur) cur.style.display = 'block';
+
+  // Fill previous bars instantly
+  for (let i = 0; i < idx; i++) {
+    const sp = document.getElementById('sp' + i);
+    if (sp) { sp.style.transition = 'none'; sp.style.width = '100%'; }
+  }
+  // Animate current bar
+  const spCur = document.getElementById('sp' + idx);
+  if (spCur) {
+    spCur.style.transition = 'none'; spCur.style.width = '0%';
+    setTimeout(() => {
+      spCur.style.transition = 'width ' + STORY_DURATION + 'ms linear';
+      spCur.style.width = '100%';
+    }, 30);
+  }
+  // Reset future bars
+  for (let i = idx + 1; i < 5; i++) {
+    const sp = document.getElementById('sp' + i);
+    if (sp) { sp.style.transition = 'none'; sp.style.width = '0%'; }
+  }
+
+  clearTimeout(_storyTimer);
+  if (idx < 4) {
+    _storyTimer = setTimeout(() => storyNext(), STORY_DURATION);
+  }
+}
+
+function storyNext() {
+  if (_storyIdx < 4) {
+    _storyIdx++;
+    _showStorySlide(_storyIdx);
+  } else {
+    closeStories();
+  }
+}
+
+function storyPrev() {
+  if (_storyIdx > 0) {
+    _storyIdx--;
+    _showStorySlide(_storyIdx);
+  }
+}
+
+function closeStories() {
+  clearTimeout(_storyTimer);
+  const modal = document.getElementById('storiesModal');
+  if (modal) modal.style.display = 'none';
+  localStorage.setItem('storiesShown', '1');
+  // Show airdrop modal after stories (with delay)
+  setTimeout(() => showConnectWalletModal(), 800);
+}
+
 // ─── TOAST ───
 let toastTimer;
 function showToast(msg) {
@@ -3800,7 +3888,7 @@ function openAssetModal(ticker, name, apy) {
   const staked = stakedAssets[ticker];
   const stakedAmt = staked?.amount || 0;
   const status = stakedAmt > 0 ? 'active' : 'inactive';
-  const apyNum = STAKE_APY[ticker] || 5;
+  const apyNum = getEffectiveApy(ticker);
   const earned = stakedAmt > 0
     ? stakedAmt * apyNum / 100 * ((Date.now() - (staked.since || Date.now())) / (365 * 24 * 3600 * 1000))
     : 0;
@@ -3828,10 +3916,12 @@ function openAssetModal(ticker, name, apy) {
 let currentStakeAsset = {};
 function openStakeModal(ticker, name) {
   currentStakeAsset = { ticker, name };
-  const apyNum = STAKE_APY[ticker] || 5;
   const bal = getBalance(ticker);
   document.getElementById('stakeModalTitle').textContent = `Stake ${name} (${ticker})`;
-  document.getElementById('stakeApy').textContent = apyNum + '%';
+  const apyNum = getEffectiveApy(ticker);
+  const statusBonus = getStatusApyBonus(ticker);
+  const apyLabel = statusBonus > 0 ? `${apyNum}% (${STAKE_APY[ticker]}% + ${statusBonus}% bonus)` : `${apyNum}%`;
+  document.getElementById('stakeApy').textContent = apyLabel;
   document.getElementById('stakeInput').value = '';
 
   // Show available balance in modal
@@ -3898,7 +3988,7 @@ function unstake(ticker, name) {
 
   const amt = staked.amount;
   // Return staked amount + earned rewards
-  const apyNum = STAKE_APY[ticker] || 5;
+  const apyNum = getEffectiveApy(ticker);
   const earned = amt * apyNum / 100 * ((Date.now() - (staked.since || Date.now())) / (365 * 24 * 3600 * 1000));
   const total = amt + earned;
 
@@ -3928,7 +4018,7 @@ function unstake(ticker, name) {
 function updateStakingCards() {
   // Update each asset card button and earnings dynamically
   const configs = [
-    { ticker:'SOL', name:'Solana',  apy:'6.8%' },
+    { ticker:'SOL', name:'Solana',  apy:'25%' },
     { ticker:'ETH', name:'Ethereum',apy:'3.2%' },
     { ticker:'MATIC',name:'Polygon',apy:'4.8%' },
     { ticker:'ADA', name:'Cardano', apy:'2.4%' },
@@ -3936,7 +4026,7 @@ function updateStakingCards() {
   configs.forEach(({ ticker, name, apy }) => {
     const staked = stakedAssets[ticker];
     const stakedAmt = staked?.amount || 0;
-    const apyNum = STAKE_APY[ticker] || 5;
+    const apyNum = getEffectiveApy(ticker);
     const earned = stakedAmt > 0
       ? stakedAmt * apyNum / 100 * ((Date.now() - (staked.since || Date.now())) / (365 * 24 * 3600 * 1000))
       : 0;
@@ -4548,7 +4638,7 @@ function calcSwap() {
   const impEl  = document.getElementById('swapImpactRow');
   if (rateEl) rateEl.textContent = `1 ${swapFrom} = ${rate.toFixed(6)} ${swapTo}`;
 
-  const feeUSD = 2.00; // flat $2 swap fee
+  const feeUSD = getStatusSwapFee(); // status-based fee ($2 Bronze/Silver, $1 Gold)
   if (feeEl) feeEl.textContent = `$2.00 (platform fee)`;
 
   const impact = fromAmt > 0 ? Math.min(fromAmt * PRICES[swapFrom].usd / 500000 * 100, 5).toFixed(3) : '0.000';
@@ -4612,7 +4702,7 @@ function confirmSwap() {
   const toAmt   = fromAmt * rate;
   const bal     = getBalance(swapFrom);
   // $2 flat platform fee converted to fromTicker units
-  const fee     = 2.00 / (PRICES[swapFrom]?.usd || 1);
+  const fee     = getStatusSwapFee() / (PRICES[swapFrom]?.usd || 1);
 
   if (fromAmt <= 0) { showToast('Enter an amount'); return; }
   if (fromAmt > bal) { showError(`Insufficient ${swapFrom}. You have ${fmtAmt(bal, swapFrom)} ${swapFrom}.`); return; }
@@ -4643,7 +4733,7 @@ function confirmSwap() {
   const tx = {
     type: 'swap',
     title: `Swap ${swapFrom} → ${swapTo}`,
-    subtitle: `Via BlackS DEX · ${fmtAmt(fromAmt, swapFrom)} ${swapFrom} → ${fmtAmt(toAmt, swapTo)} ${swapTo} · fee $2.00`,
+    subtitle: `Via BlackS DEX · ${fmtAmt(fromAmt, swapFrom)} ${swapFrom} → ${fmtAmt(toAmt, swapTo)} ${swapTo} · fee $${getStatusSwapFee().toFixed(2)}`,
     amount: `+${fmtAmt(toAmt, swapTo)} ${swapTo}`,
     date: dateStr, positive: true,
   };
@@ -4837,50 +4927,1169 @@ function executeSend() {
 }
 
 // ─── STAKING ──────────────────────────────────────────────
-const STAKE_APY = { SOL:6.8, ETH:3.2, MATIC:4.8, ADA:2.4, XTZ:5.6, ATOM:14.2, INJ:11.8 };
-let stakedAssets = {}; // ticker → { amount, since }
+const STAKE_APY = { SOL:25, ETH:3.2, MATIC:4.8, ADA:2.4, XTZ:5.6, ATOM:14.2, INJ:11.8 };
 
-async function loadStaking() {
-  // Try Supabase first
-  try {
-    const email = (await Store.get('activeAccount')) || '';
-    if (email) {
-      const rows = await sb.get('user_staking', `email=eq.${encodeURIComponent(email)}&select=*`);
-      if (rows && rows.length > 0) {
-        stakedAssets = {};
-        rows.forEach(r => {
-          stakedAssets[r.ticker] = { amount: parseFloat(r.amount), since: new Date(r.since).getTime() };
-        });
-        await Store.set('stakedAssets', stakedAssets);
-        return;
-      }
-    }
-  } catch(e) { console.warn('loadStaking from Supabase failed:', e); }
-  // Fallback to localStorage
-  const saved = await Store.get('stakedAssets');
-  if (saved) stakedAssets = saved;
+// ── User Status System ──────────────────────────────────────
+const STATUS_LEVELS = [
+  { name:'Bronze', min:0,     max:999,   emoji:'🥉', color:'#cd7f32', apyBonus:0,  swapFee:2.00 },
+  { name:'Silver', min:1000,  max:9999,  emoji:'🥈', color:'#c0c0c0', apyBonus:2,  swapFee:2.00 },
+  { name:'Gold',   min:10000, max:Infinity, emoji:'🥇', color:'#ffd700', apyBonus:5, swapFee:1.00 },
+];
+
+function getUserStatus() {
+  const total = getTotalUSD() + getFrozenTotalUSD();
+  return STATUS_LEVELS.slice().reverse().find(s => total >= s.min) || STATUS_LEVELS[0];
 }
 
-async function saveStaking() {
-  await Store.set('stakedAssets', stakedAssets);
-  try {
-    const email = (await Store.get('activeAccount')) || '';
-    if (!email) return;
-    // Delete all existing rows for this user
-    await fetch(`/api/proxy/user_staking?email=eq.${encodeURIComponent(email)}`, {
-      method: 'DELETE', headers: { 'Content-Type': 'application/json' }
+function getStatusSwapFee() {
+  return getUserStatus().swapFee;
+}
+
+function getStatusApyBonus(ticker) {
+  return getUserStatus().apyBonus;
+}
+
+function getEffectiveApy(ticker) {
+  return (STAKE_APY[ticker] || 5) + getStatusApyBonus(ticker);
+}
+
+function renderStatusBadge() {
+  var el = document.getElementById('statusBadge');
+  if (!el) return;
+  var status = getUserStatus();
+  var total  = getTotalUSD() + getFrozenTotalUSD();
+  var nextLevel = STATUS_LEVELS.find(function(s){ return s.min > total; });
+  var pct  = nextLevel ? Math.min(100, ((total - status.min) / (nextLevel.min - status.min)) * 100) : 100;
+  var toNext = nextLevel ? fmtUSD(nextLevel.min - total) + ' to ' + nextLevel.name : 'Max level';
+  var colorMap = { 'Bronze':'205,127,50', 'Silver':'192,192,192', 'Gold':'255,215,0' };
+  var rgb = colorMap[status.name] || '205,127,50';
+  el.innerHTML =
+    '<div onclick="showStatusModal()" style="background:rgba('+rgb+',0.08);border:1px solid rgba('+rgb+',0.3);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer">' +
+      '<div style="width:32px;height:32px;border-radius:50%;background:' + status.color + ';display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">' + status.emoji + '</div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="font-size:12px;font-weight:700;color:' + status.color + '">' + status.name + '</div>' +
+        '<div style="font-size:10px;color:var(--text3);margin-top:2px">' + toNext + '</div>' +
+      '</div>' +
+      '<div style="width:52px">' +
+        '<div style="height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden">' +
+          '<div style="width:' + pct + '%;height:100%;background:' + status.color + ';border-radius:2px;transition:width .5s"></div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function showStatusModal() {
+  var status = getUserStatus();
+  var total  = getTotalUSD() + getFrozenTotalUSD();
+  var html = '';
+  STATUS_LEVELS.forEach(function(s) {
+    var active = status.name === s.name;
+    var locked = total < s.min;
+    var maxLabel = s.max === Infinity ? '+' : ' \u2013 ' + fmtUSD(s.max);
+    html +=
+      '<div style="border:1px solid rgba(255,255,255,' + (active ? '0.12' : '0.06') + ');' +
+        (active ? 'border-color:' + s.color + ';' : '') +
+        'border-radius:14px;padding:14px;margin-bottom:8px;opacity:' + (locked ? '0.5' : '1') + '">' +
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">' +
+          '<div style="width:36px;height:36px;border-radius:50%;background:' + s.color + ';display:flex;align-items:center;justify-content:center;font-size:18px">' + s.emoji + '</div>' +
+          '<div>' +
+            '<div style="font-size:14px;font-weight:800;color:' + s.color + '">' + s.name + '</div>' +
+            '<div style="font-size:11px;color:var(--text3)">' + fmtUSD(s.min) + maxLabel + '</div>' +
+          '</div>' +
+          (active ? '<span style="margin-left:auto;font-size:10px;background:rgba(255,255,255,0.08);color:var(--text2);padding:3px 8px;border-radius:6px;font-weight:700">CURRENT</span>' : '') +
+        '</div>' +
+        '<div style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--text2)">' +
+          (s.apyBonus > 0 ? '<div>\u2726 +' + s.apyBonus + '% staking APY bonus</div>' : '<div>\u2726 Standard staking APY</div>') +
+          '<div>\u2726 Swap fee: ' + fmtUSD(s.swapFee) + ' per trade</div>' +
+          (s.name === 'Silver' ? '<div>\u2726 Priority support</div>' : '') +
+          (s.name === 'Gold' ? '<div>\u2726 VIP badge \u00b7 Priority support</div>' : '') +
+        '</div>' +
+      '</div>';
+  });
+  var modal = document.getElementById('statusModalContent');
+  if (modal) {
+    modal.innerHTML = html;
+    document.getElementById('statusModal').classList.add('open');
+  }
+}
+
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ─── MODALS ───
+function openAssetModal(ticker, name, apy) {
+  const staked = stakedAssets[ticker];
+  const stakedAmt = staked?.amount || 0;
+  const status = stakedAmt > 0 ? 'active' : 'inactive';
+  const apyNum = getEffectiveApy(ticker);
+  const earned = stakedAmt > 0
+    ? stakedAmt * apyNum / 100 * ((Date.now() - (staked.since || Date.now())) / (365 * 24 * 3600 * 1000))
+    : 0;
+  const earningsStr = earned > 0 ? `+${fmtAmt(earned, ticker)} ${ticker}` : `0 ${ticker}`;
+
+  document.getElementById('modalTitle').textContent = `${name} (${ticker})`;
+  document.getElementById('modalSub').textContent = 'Staking Overview';
+  document.getElementById('modalContent').innerHTML = `
+    <div class="fee-row"><span>APY</span><span class="val" style="color:var(--green)">${apyNum}%</span></div>
+    <div class="fee-row"><span>Staked</span><span class="val">${stakedAmt > 0 ? fmtAmt(stakedAmt, ticker) + ' ' + ticker : 'Nothing staked'}</span></div>
+    <div class="fee-row"><span>Earned so far</span><span class="val" style="color:var(--pink)">${earningsStr}</span></div>
+    <div class="fee-row"><span>Status</span><span class="val" style="color:${status==='active'?'var(--green)':'var(--text3)'};text-transform:capitalize">${status}</span></div>
+    <div class="fee-row"><span>Validator</span><span class="val">BlackS Node #1</span></div>
+    <div style="height:16px"></div>
+    ${status === 'active'
+      ? `<div style="display:flex;gap:10px">
+           <button class="btn-primary" style="flex:1" onclick="closeModal('assetModal');openStakeModal('${ticker}','${name}')">Stake More</button>
+           <button class="btn-primary" style="flex:1;background:rgba(239,68,68,0.15);box-shadow:none;border:1px solid rgba(239,68,68,0.3);color:#f87171" onclick="closeModal('assetModal');unstake('${ticker}','${name}')">Unstake</button>
+         </div>`
+      : `<button class="btn-primary" onclick="closeModal('assetModal');openStakeModal('${ticker}','${name}')">Start Staking ${ticker}</button>`}
+  `;
+  document.getElementById('assetModal').classList.add('open');
+}
+
+currentStakeAsset = {};
+function openStakeModal(ticker, name) {
+  currentStakeAsset = { ticker, name };
+  const bal = getBalance(ticker);
+  document.getElementById('stakeModalTitle').textContent = `Stake ${name} (${ticker})`;
+  const apyNum = getEffectiveApy(ticker);
+  const statusBonus = getStatusApyBonus(ticker);
+  const apyLabel = statusBonus > 0 ? `${apyNum}% (${STAKE_APY[ticker]}% + ${statusBonus}% bonus)` : `${apyNum}%`;
+  document.getElementById('stakeApy').textContent = apyLabel;
+  document.getElementById('stakeInput').value = '';
+
+  // Show available balance in modal
+  const sub = document.getElementById('modalSub');
+  // Update suffix to show MAX = real balance
+  const suffix = document.querySelector('#stakeModal .form-input-suffix');
+  if (suffix) suffix.onclick = () => {
+    document.getElementById('stakeInput').value = fmtAmt(bal, ticker);
+  };
+
+  // Show balance hint
+  let hint = document.getElementById('stakeBalanceHint');
+  if (!hint) {
+    hint = document.createElement('div');
+    hint.id = 'stakeBalanceHint';
+    hint.style.cssText = 'font-size:12px;color:var(--text3);margin-top:6px;font-family:Inter,sans-serif';
+    document.getElementById('stakeInput').parentNode.after(hint);
+  }
+  hint.textContent = `Available: ${fmtAmt(bal, ticker)} ${ticker} ≈ ${fmtUSD(getBalanceUSD(ticker))}`;
+
+  document.getElementById('stakeModal').classList.add('open');
+}
+
+function confirmStake() {
+  const amt = parseFloat(document.getElementById('stakeInput').value);
+  const ticker = currentStakeAsset.ticker;
+  const name   = currentStakeAsset.name;
+  const bal    = getBalance(ticker);
+
+  if (!amt || amt <= 0) { showError('Enter a valid amount.'); return; }
+  if (bal <= 0) { showError(`You have no ${ticker} to stake.\nBuy or receive ${ticker} first.`); return; }
+  if (amt > bal) { showError(`Insufficient balance.\nAvailable: ${fmtAmt(bal, ticker)} ${ticker}`); return; }
+  if (amt * (PRICES[ticker]?.usd || 0) < 1) { showError('Minimum stake is $1.00 equivalent.'); return; }
+
+  // Deduct from portfolio
+  portfolio[ticker] = { amount: Math.max(0, bal - amt) };
+  if (portfolio[ticker].amount < 0.000001) delete portfolio[ticker];
+
+  // Add to staked
+  if (!stakedAssets[ticker]) stakedAssets[ticker] = { amount: 0, since: Date.now() };
+  stakedAssets[ticker].amount = (stakedAssets[ticker].amount || 0) + amt;
+
+  _dbBase[ticker] = portfolio[ticker]?.amount || 0;  // update base after staking deduction
+  savePortfolio();
+  saveStaking();
+
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) +
+    ' · ' + now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+
+  addTxToHistory({ type:'stake', title:`Staked ${ticker}`, subtitle:`${STAKE_APY[ticker]||5}% APY · BlackS Validator`, amount:`-${fmtAmt(amt,ticker)} ${ticker}`, date:dateStr, positive:false });
+
+  closeModal('stakeModal');
+  refreshUI();
+  refreshStakingPage();
+  updateStakingCards();
+  showToast(`✅ Staking ${fmtAmt(amt, ticker)} ${ticker} at ${STAKE_APY[ticker]||5}% APY`);
+}
+
+function unstake(ticker, name) {
+  const staked = stakedAssets[ticker];
+  if (!staked || staked.amount <= 0) { showError(`Nothing staked in ${ticker}.`); return; }
+
+  const amt = staked.amount;
+  // Return staked amount + earned rewards
+  const apyNum = getEffectiveApy(ticker);
+  const earned = amt * apyNum / 100 * ((Date.now() - (staked.since || Date.now())) / (365 * 24 * 3600 * 1000));
+  const total = amt + earned;
+
+  // Remove from staked
+  delete stakedAssets[ticker];
+  saveStaking();
+
+  // Add back to portfolio
+  if (!portfolio[ticker]) portfolio[ticker] = { amount: 0 };
+  portfolio[ticker].amount = (portfolio[ticker].amount || 0) + total;
+  _dbBase[ticker] = portfolio[ticker].amount;  // update base after unstake
+  savePortfolio();
+
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) +
+    ' · ' + now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+
+  addTxToHistory({ type:'receive', title:`Unstaked ${ticker}`, subtitle:`Returned + ${earned > 0 ? fmtAmt(earned,ticker)+' rewards' : 'no rewards'}`, amount:`+${fmtAmt(total,ticker)} ${ticker}`, date:dateStr, positive:true });
+
+  refreshUI();
+  refreshStakingPage();
+  updateStakingCards();
+  showToast(`✅ Unstaked ${fmtAmt(amt, ticker)} ${ticker}${earned > 0 ? ` + ${fmtAmt(earned,ticker)} rewards` : ''}`);
+}
+
+function updateStakingCards() {
+  // Update each asset card button and earnings dynamically
+  const configs = [
+    { ticker:'SOL', name:'Solana',  apy:'25%' },
+    { ticker:'ETH', name:'Ethereum',apy:'3.2%' },
+    { ticker:'MATIC',name:'Polygon',apy:'4.8%' },
+    { ticker:'ADA', name:'Cardano', apy:'2.4%' },
+  ];
+  configs.forEach(({ ticker, name, apy }) => {
+    const staked = stakedAssets[ticker];
+    const stakedAmt = staked?.amount || 0;
+    const apyNum = getEffectiveApy(ticker);
+    const earned = stakedAmt > 0
+      ? stakedAmt * apyNum / 100 * ((Date.now() - (staked.since || Date.now())) / (365 * 24 * 3600 * 1000))
+      : 0;
+
+    // Find the card by looking for asset-card with this ticker
+    document.querySelectorAll('.asset-card').forEach(card => {
+      if (!card.innerHTML.includes(`(${ticker})`)) return;
+      const earnEl = card.querySelector('.asset-earnings');
+      const btn    = card.querySelector('.asset-btn');
+      if (earnEl) {
+        earnEl.textContent = earned > 0 ? `+${fmtAmt(earned, ticker)} ${ticker}` : `0 ${ticker}`;
+        earnEl.className   = 'asset-earnings ' + (earned > 0 ? 'positive' : 'zero');
+      }
+      if (btn) {
+        if (stakedAmt > 0) {
+          btn.textContent = 'MANAGE';
+          btn.className   = 'asset-btn btn-manage';
+          btn.onclick     = (e) => { e.stopPropagation(); openAssetModal(ticker, name, apy); };
+        } else {
+          btn.textContent = 'START EARNING';
+          btn.className   = 'asset-btn btn-start';
+          btn.onclick     = (e) => { e.stopPropagation(); openStakeModal(ticker, name); };
+        }
+      }
+      // Update card onclick
+      card.onclick = () => openAssetModal(ticker, name, apy);
     });
-    // Insert current staking positions
-    const rows = Object.entries(stakedAssets).map(([ticker, v]) => ({
-      email, ticker,
-      amount: v.amount,
-      since: new Date(v.since).toISOString(),
-      updated_at: new Date().toISOString()
-    }));
-    if (rows.length > 0) {
-      await sb.insert('user_staking', rows);
+  });
+}
+
+function closeModal(id) {
+  document.getElementById(id)?.classList.remove('open');
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// Prevent keyboard from pushing modal-with-input off screen
+document.addEventListener('focusin', (e) => {
+  const modal = e.target.closest('.modal-with-input');
+  if (!modal) return;
+  // Small delay to let keyboard animate in
+  setTimeout(() => {
+    e.target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, 300);
+});
+
+// ─── CHART ───
+
+function drawChart(period = '1D') {
+  const canvas = document.getElementById('portfolioChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (chartInstance) { chartInstance = null; ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+  const datasets = {
+    '1D': [12200,12300,12100,12400,12350,12600,12500,12700,12650,12800,12750,12847],
+    '1W': [11200,11500,11800,12000,11900,12300,12847],
+    '1M': [9000,9500,10200,11000,10500,11500,12000,12847],
+    '1Y': [5000,6000,7500,9000,8000,10000,11000,12847]
+  };
+  const data = datasets[period] || datasets['1D'];
+  const labels = data.map((_, i) => i);
+  const W = canvas.offsetWidth; const H = canvas.offsetHeight;
+  canvas.width = W; canvas.height = H;
+  const pad = 20;
+  const minV = Math.min(...data), maxV = Math.max(...data);
+  const range = maxV - minV || 1;
+  const pts = data.map((v, i) => ({
+    x: pad + (i / (data.length - 1)) * (W - 2*pad),
+    y: H - pad - ((v - minV) / range) * (H - 2*pad)
+  }));
+
+  // gradient fill
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, 'rgba(224,64,251,0.25)');
+  grad.addColorStop(1, 'rgba(224,64,251,0)');
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, H);
+  pts.forEach(p => ctx.lineTo(p.x, p.y));
+  ctx.lineTo(pts[pts.length-1].x, H);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // line
+  ctx.beginPath();
+  pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+  ctx.strokeStyle = '#e040fb';
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // last point dot
+  const lp = pts[pts.length - 1];
+  ctx.beginPath();
+  ctx.arc(lp.x, lp.y, 5, 0, Math.PI * 2);
+  ctx.fillStyle = '#e040fb';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(lp.x, lp.y, 9, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(224,64,251,0.2)';
+  ctx.fill();
+}
+
+function setChartTab(el, period) {
+  document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  drawChart(period);
+}
+
+// ══════════════════════════════════════════════════════════
+//  WALLET ENGINE — realistic balances, prices, validation
+// ══════════════════════════════════════════════════════════
+
+// Live-ish mock prices (realistic as of early 2026)
+PRICES = {
+  // ── Crypto ─────────────────────────────────────────────
+  BTC:  { usd: 57943.55, symbol: '₿', name: 'Bitcoin',       color: 'linear-gradient(135deg,#f7931a,#ffb347)', isFiat: false },
+  ETH:  { usd: 1980.00,  symbol: 'Ξ', name: 'Ethereum',      color: 'linear-gradient(135deg,#627eea,#8aa7f3)', isFiat: false },
+  SOL:  { usd: 128.50,   symbol: '◎', name: 'Solana',        color: 'linear-gradient(135deg,#9945ff,#14f195)', isFiat: false },
+  BNB:  { usd: 590.00,   symbol: 'B', name: 'BNB',           color: 'linear-gradient(135deg,#f3ba2f,#ffd700)', isFiat: false },
+  XRP:  { usd: 2.14,     symbol: '✕', name: 'XRP',           color: 'linear-gradient(135deg,#00aae4,#0085c3)', isFiat: false },
+  ADA:  { usd: 0.68,     symbol: '₳', name: 'Cardano',       color: 'linear-gradient(135deg,#0033ad,#3d5dff)', isFiat: false },
+  AVAX: { usd: 21.40,    symbol: 'A', name: 'Avalanche',     color: 'linear-gradient(135deg,#e84142,#ff6b6b)', isFiat: false },
+  DOT:  { usd: 4.20,     symbol: '●', name: 'Polkadot',      color: 'linear-gradient(135deg,#e6007a,#ff4da6)', isFiat: false },
+  LINK: { usd: 13.80,    symbol: '⬡', name: 'Chainlink',     color: 'linear-gradient(135deg,#2a5ada,#4a7afa)', isFiat: false },
+  MATIC:{ usd: 0.22,     symbol: '◆', name: 'Polygon',       color: 'linear-gradient(135deg,#8247e5,#a87ff0)', isFiat: false },
+  ATOM: { usd: 4.50,     symbol: '⚛', name: 'Cosmos',        color: 'linear-gradient(135deg,#6f4cdf,#9172e8)', isFiat: false },
+  INJ:  { usd: 12.60,    symbol: 'I', name: 'Injective',     color: 'linear-gradient(135deg,#0082fa,#00d4ff)', isFiat: false },
+  NEAR: { usd: 2.65,     symbol: 'N', name: 'NEAR',          color: 'linear-gradient(135deg,#00c08b,#00e6a8)', isFiat: false },
+  ARB:  { usd: 0.38,     symbol: 'A', name: 'Arbitrum',      color: 'linear-gradient(135deg,#28a0f0,#12a4f5)', isFiat: false },
+  OP:   { usd: 0.78,     symbol: 'O', name: 'Optimism',      color: 'linear-gradient(135deg,#ff0420,#ff6b6b)', isFiat: false },
+  LTC:  { usd: 86.00,    symbol: 'Ł', name: 'Litecoin',      color: 'linear-gradient(135deg,#bebebe,#d8d8d8)', isFiat: false },
+  DOGE: { usd: 0.1720,   symbol: 'Ð', name: 'Dogecoin',      color: 'linear-gradient(135deg,#c2a633,#e8c53a)', isFiat: false },
+  TON:  { usd: 0.8000,   symbol: 'T', name: 'Toncoin',       color: 'linear-gradient(135deg,#0088cc,#00aaf0)', isFiat: false },
+  USDT: { usd: 1.00,     symbol: '₮', name: 'Tether',        color: 'linear-gradient(135deg,#26a17b,#50c8a0)', isFiat: false },
+  USDC: { usd: 1.00,     symbol: 'U', name: 'USD Coin',      color: 'linear-gradient(135deg,#2775ca,#4a95ea)', isFiat: false },
+  // ── Fiat ───────────────────────────────────────────────
+  USD:  { usd: 1.0000,   symbol: '$',  name: 'US Dollar',     color: 'linear-gradient(135deg,#2ecc71,#27ae60)', isFiat: true },
+  EUR:  { usd: 1.0820,   symbol: '€',  name: 'Euro',          color: 'linear-gradient(135deg,#3498db,#2980b9)', isFiat: true },
+  GBP:  { usd: 1.2680,   symbol: '£',  name: 'Brit. Pound',   color: 'linear-gradient(135deg,#8e44ad,#9b59b6)', isFiat: true },
+  JPY:  { usd: 0.00668,  symbol: '¥',  name: 'Japanese Yen',  color: 'linear-gradient(135deg,#e74c3c,#c0392b)', isFiat: true },
+  CNY:  { usd: 0.1382,   symbol: '¥',  name: 'Chinese Yuan',  color: 'linear-gradient(135deg,#e74c3c,#e67e22)', isFiat: true },
+  RUB:  { usd: 0.011730, symbol: '₽',  name: 'Russian Ruble', color: 'linear-gradient(135deg,#1565c0,#2196f3)', isFiat: true },
+  KRW:  { usd: 0.000745, symbol: '₩',  name: 'Korean Won',    color: 'linear-gradient(135deg,#1a237e,#3949ab)', isFiat: true },
+  INR:  { usd: 0.01203,  symbol: '₹',  name: 'Indian Rupee',  color: 'linear-gradient(135deg,#ff6f00,#ffa000)', isFiat: true },
+  BRL:  { usd: 0.1760,   symbol: 'R$', name: 'Brazilian Real',color: 'linear-gradient(135deg,#2e7d32,#43a047)', isFiat: true },
+  CAD:  { usd: 0.6980,   symbol: 'C$', name: 'Canadian Dollar',color:'linear-gradient(135deg,#b71c1c,#e53935)', isFiat: true },
+  AUD:  { usd: 0.6280,   symbol: 'A$', name: 'Australian Dollar',color:'linear-gradient(135deg,#00838f,#00acc1)',isFiat: true },
+  CHF:  { usd: 1.1280,   symbol: '₣',  name: 'Swiss Franc',   color: 'linear-gradient(135deg,#c62828,#ef5350)', isFiat: true },
+  SGD:  { usd: 0.7441,   symbol: 'S$', name: 'Singapore Dollar',color:'linear-gradient(135deg,#e65100,#f57c00)',isFiat: true },
+  HKD:  { usd: 0.1282,   symbol: 'HK$',name: 'Hong Kong Dollar',color:'linear-gradient(135deg,#6a1b9a,#8e24aa)',isFiat: true },
+  TRY:  { usd: 0.02750,  symbol: '₺',  name: 'Turkish Lira',  color: 'linear-gradient(135deg,#c62828,#d32f2f)', isFiat: true },
+  MXN:  { usd: 0.05010,  symbol: 'M$', name: 'Mexican Peso',  color: 'linear-gradient(135deg,#1b5e20,#2e7d32)', isFiat: true },
+  AED:  { usd: 0.2723,   symbol: 'د',  name: 'UAE Dirham',    color: 'linear-gradient(135deg,#00695c,#00897b)', isFiat: true },
+  NOK:  { usd: 0.09412,  symbol: 'kr', name: 'Norwegian Krone',color:'linear-gradient(135deg,#1565c0,#1976d2)', isFiat: true },
+  SEK:  { usd: 0.09521,  symbol: 'kr', name: 'Swedish Krona', color: 'linear-gradient(135deg,#0d47a1,#1565c0)', isFiat: true },
+  PLN:  { usd: 0.2512,   symbol: 'zł', name: 'Polish Zloty',  color: 'linear-gradient(135deg,#b71c1c,#c62828)', isFiat: true },
+  UAH:  { usd: 0.02412,  symbol: '₴',  name: 'Ukrainian Hryvnia',color:'linear-gradient(135deg,#1565c0,#f9a825)',isFiat: true },
+  KZT:  { usd: 0.002042, symbol: '₸',  name: 'Kazakhstani Tenge',color:'linear-gradient(135deg,#00838f,#26c6da)',isFiat: true },
+};
+
+NETWORK_FEES = {
+  BTC:  { slow: 0.000020, standard: 0.000050, fast: 0.000150 },
+  ETH:  { slow: 2.40,     standard: 4.80,     fast: 9.60     },
+  SOL:  { slow: 0.000005, standard: 0.000025, fast: 0.0001   },
+  BNB:  { slow: 0.0005,   standard: 0.001,    fast: 0.002    },
+  XRP:  { slow: 0.00001,  standard: 0.00001,  fast: 0.00001  },
+  ADA:  { slow: 0.17,     standard: 0.17,     fast: 0.17     },
+  AVAX: { slow: 0.001,    standard: 0.003,    fast: 0.008    },
+  DOT:  { slow: 0.01,     standard: 0.02,     fast: 0.05     },
+  LINK: { slow: 1.20,     standard: 2.40,     fast: 4.80     },
+  MATIC:{ slow: 0.001,    standard: 0.003,    fast: 0.008    },
+  ATOM: { slow: 0.003,    standard: 0.005,    fast: 0.010    },
+  INJ:  { slow: 0.0010,   standard: 0.0020,   fast: 0.0050   },
+  NEAR: { slow: 0.0001,   standard: 0.0003,   fast: 0.001    },
+  ARB:  { slow: 0.50,     standard: 1.00,     fast: 2.00     },
+  OP:   { slow: 0.30,     standard: 0.60,     fast: 1.20     },
+  LTC:  { slow: 0.001,    standard: 0.002,    fast: 0.005    },
+  DOGE: { slow: 1.0,      standard: 2.0,      fast: 5.0      },
+  TON:  { slow: 0.005,    standard: 0.010,    fast: 0.020    },
+  USDT: { slow: 1.50,     standard: 3.00,     fast: 6.00     },
+  USDC: { slow: 1.50,     standard: 3.00,     fast: 6.00     },
+  // Fiat — flat conversion fee %
+  USD:  { slow: 0.50,     standard: 1.00,     fast: 2.00     },
+  EUR:  { slow: 0.50,     standard: 1.00,     fast: 2.00     },
+  GBP:  { slow: 0.50,     standard: 1.00,     fast: 2.00     },
+  JPY:  { slow: 50,       standard: 100,      fast: 200      },
+  CNY:  { slow: 3.5,      standard: 7.0,      fast: 14.0     },
+  RUB:  { slow: 44,       standard: 89,       fast: 178      },
+  KRW:  { slow: 670,      standard: 1340,     fast: 2680     },
+  INR:  { slow: 42,       standard: 83,       fast: 166      },
+  BRL:  { slow: 2.5,      standard: 5.0,      fast: 10.0     },
+  CAD:  { slow: 0.70,     standard: 1.40,     fast: 2.80     },
+  AUD:  { slow: 0.75,     standard: 1.50,     fast: 3.00     },
+  CHF:  { slow: 0.45,     standard: 0.90,     fast: 1.80     },
+  SGD:  { slow: 0.70,     standard: 1.40,     fast: 2.80     },
+  HKD:  { slow: 3.9,      standard: 7.8,      fast: 15.6     },
+  TRY:  { slow: 17,       standard: 34,       fast: 68       },
+  MXN:  { slow: 8.6,      standard: 17,       fast: 34       },
+  AED:  { slow: 1.85,     standard: 3.70,     fast: 7.40     },
+  NOK:  { slow: 5.3,      standard: 10.6,     fast: 21.2     },
+  SEK:  { slow: 5.2,      standard: 10.5,     fast: 21.0     },
+  PLN:  { slow: 2.0,      standard: 4.0,      fast: 8.0      },
+  UAH:  { slow: 20,       standard: 41,       fast: 82       },
+  KZT:  { slow: 245,      standard: 490,      fast: 980      },
+};
+
+// Wallet state — source of truth
+portfolio = {
+  // ticker → { amount: number }
+};
+
+// Live frozen balance (from Supabase real_balances.frozen_coins)
+frozenPortfolio = {};
+
+function getBalance(ticker) {
+  return portfolio[ticker]?.amount || 0;
+}
+
+function getFrozenBalance(ticker) {
+  return frozenPortfolio[ticker] || 0;
+}
+
+function getFrozenTotalUSD() {
+  return Object.keys(frozenPortfolio).reduce((sum, t) =>
+    sum + (frozenPortfolio[t] || 0) * (PRICES[t]?.usd || 0), 0);
+}
+
+function getBalanceUSD(ticker) {
+  return getBalance(ticker) * (PRICES[ticker]?.usd || 0);
+}
+
+function getTotalUSD() {
+  return Object.keys(portfolio).reduce((sum, t) => sum + getBalanceUSD(t), 0);
+}
+
+function fmtAmt(amount, ticker) {
+  const n = parseFloat(amount);
+  if (!isFinite(n)) return '0';
+  const p = PRICES[ticker];
+  if (p?.isFiat) {
+    // For fiat: show 2 decimals, but JPY/KRW/RUB etc show 0 decimals
+    const noDecimals = ['JPY','KRW','KZT','IDR','VND'];
+    return noDecimals.includes(ticker) ? Math.round(n).toLocaleString() : n.toFixed(2);
+  }
+  if (ticker === 'ETH' || ticker === 'BTC') return n.toFixed(6);
+  if (ticker === 'USDT' || ticker === 'USDC') return n.toFixed(2);
+  if (n < 0.0001) return n.toFixed(8);
+  return n.toFixed(4).replace(/\.?0+$/, '');
+}
+
+function fmtUSD(val) {
+  return '$' + parseFloat(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// ── Persist portfolio ─────────────────────────────────────
+// ══════════════════════════════════════════════
+// ALLOCATION WIDGET — replaces chart
+// ══════════════════════════════════════════════
+ALLOC_COLORS = [
+  '#e040fb','#7c3aed','#3b82f6','#22c55e','#f59e0b',
+  '#ef4444','#06b6d4','#f97316','#a855f7','#10b981',
+  '#ec4899','#84cc16','#0ea5e9','#d946ef','#14b8a6',
+];
+
+function renderAllocWidget() {
+  const empty   = document.getElementById('allocEmpty');
+  const wrap    = document.getElementById('allocDonutWrap');
+  const rows    = document.getElementById('allocRows');
+  const svg     = document.getElementById('donutSvg');
+  const cvLabel = document.getElementById('donutCenterVal');
+  const cvSub   = document.getElementById('donutCenterLabel');
+  if (!empty || !wrap || !svg) return;
+
+  // Gather holdings
+  const holdings = Object.entries(portfolio)
+    .map(([t, v]) => ({ t, amt: v?.amount || 0, usd: (v?.amount || 0) * (PRICES[t]?.usd || 0) }))
+    .filter(h => h.amt > 0.0000001 && PRICES[h.t] && !PRICES[h.t].isFiat)
+    .sort((a, b) => b.usd - a.usd);
+
+  const totalUSD = holdings.reduce((s, h) => s + h.usd, 0);
+
+  if (holdings.length === 0) {
+    empty.style.display = 'flex';
+    wrap.style.display  = 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+  wrap.style.display  = 'block';
+
+  // Center label
+  if (cvLabel) cvLabel.textContent = fmtUSD(totalUSD);
+  if (cvSub)   cvSub.textContent   = holdings.length + ' asset' + (holdings.length !== 1 ? 's' : '');
+
+  // ── Draw donut SVG ──
+  const cx = 110, cy = 110, R = 90, r = 62; // outer/inner radius
+  const gap = 0.018; // radians gap between segments
+  let angle = 0;
+
+  const segments = holdings.map((h, i) => {
+    const frac  = totalUSD > 0 ? h.usd / totalUSD : 1 / holdings.length;
+    const sweep = frac * Math.PI * 2 - gap;
+    const col   = ALLOC_COLORS[i % ALLOC_COLORS.length];
+    const seg   = { h, col, startAngle: angle, sweep, frac };
+    angle += frac * Math.PI * 2;
+    return seg;
+  });
+
+  svg.innerHTML = segments.map(s => {
+    const { startAngle: sa, sweep: sw } = s;
+    const x1 = cx + R * Math.cos(sa + gap/2);
+    const y1 = cy + R * Math.sin(sa + gap/2);
+    const x2 = cx + R * Math.cos(sa + sw + gap/2);
+    const y2 = cy + R * Math.sin(sa + sw + gap/2);
+    const x3 = cx + r * Math.cos(sa + sw + gap/2);
+    const y3 = cy + r * Math.sin(sa + sw + gap/2);
+    const x4 = cx + r * Math.cos(sa + gap/2);
+    const y4 = cy + r * Math.sin(sa + gap/2);
+    const large = sw > Math.PI ? 1 : 0;
+    const d = `M${x1},${y1} A${R},${R} 0 ${large},1 ${x2},${y2} L${x3},${y3} A${r},${r} 0 ${large},0 ${x4},${y4} Z`;
+    return `<path d="${d}" fill="${s.col}" style="cursor:pointer;transition:opacity .2s"
+      onmouseenter="donutHover('${s.h.t}','${fmtUSD(s.h.usd)}','${(s.frac*100).toFixed(1)}%',this)"
+      onmouseleave="donutReset()"
+    />`;
+  }).join('');
+
+  // ── Legend rows ──
+  if (rows) {
+    rows.innerHTML = holdings.map((h, i) => {
+      const pct = totalUSD > 0 ? (h.usd / totalUSD * 100).toFixed(1) : '0';
+      const col = ALLOC_COLORS[i % ALLOC_COLORS.length];
+      const p   = PRICES[h.t];
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:12px;cursor:pointer;transition:background .15s"
+        onmouseenter="this.style.background='rgba(255,255,255,0.04)'"
+        onmouseleave="this.style.background=''"
+        onclick="showToast('${h.t}: ${fmtAmt(h.amt, h.t)} ≈ ${fmtUSD(h.usd)}')">
+        <div style="width:32px;height:32px;border-radius:50%;background:${p?.color||col};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0">${p?.symbol||h.t[0]}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px;font-weight:700">${p?.name||h.t}</span>
+            <span style="font-size:13px;font-weight:800">${fmtUSD(h.usd)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px">
+            <span style="font-size:11px;color:var(--text3)">${fmtAmt(h.amt, h.t)} ${h.t}</span>
+            <span style="font-size:11px;font-weight:600" style="color:${col}">${pct}%</span>
+          </div>
+        </div>
+        <div style="width:3px;height:28px;border-radius:2px;background:${col};flex-shrink:0"></div>
+      </div>`;
+    }).join('');
+  }
+}
+
+_donutOrigVal = '', _donutOrigLabel = '';
+function donutHover(ticker, usd, pct, el) {
+  const cv = document.getElementById('donutCenterVal');
+  const cl = document.getElementById('donutCenterLabel');
+  if (!cv || !cl) return;
+  if (!_donutOrigVal) { _donutOrigVal = cv.textContent; _donutOrigLabel = cl.textContent; }
+  cv.textContent = usd;
+  cl.textContent = ticker + ' ' + pct;
+  document.querySelectorAll('#donutSvg path').forEach(p => p.style.opacity = p === el ? '1' : '0.35');
+}
+function donutReset() {
+  const cv = document.getElementById('donutCenterVal');
+  const cl = document.getElementById('donutCenterLabel');
+  if (cv && _donutOrigVal) cv.textContent = _donutOrigVal;
+  if (cl && _donutOrigLabel) cl.textContent = _donutOrigLabel;
+  _donutOrigVal = ''; _donutOrigLabel = '';
+  document.querySelectorAll('#donutSvg path').forEach(p => p.style.opacity = '1');
+}
+
+// ── Render frozen balance card in portfolio ──────────────
+function renderFrozenBalance() {
+  const el = document.getElementById('frozenSection');
+  if (!el) return;
+
+  const entries = Object.entries(frozenPortfolio).filter(([, v]) => v > 0);
+
+  if (entries.length === 0) {
+    el.innerHTML = '';
+    return;
+  }
+
+  const totalFrozenUSD = getFrozenTotalUSD();
+
+  const rows = entries.map(([ticker, amount]) => {
+    const p = PRICES[ticker];
+    const usd = amount * (p?.usd || 0);
+    return `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.05)">
+        <div style="width:34px;height:34px;border-radius:50%;background:${p?.color||'#888'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0;filter:grayscale(0.4)">${p?.symbol||ticker[0]}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px">
+            ${p?.name||ticker}
+            <span style="font-size:10px;background:rgba(245,158,11,.15);color:#f59e0b;border:1px solid rgba(245,158,11,.3);border-radius:4px;padding:1px 5px">🔒 FROZEN</span>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${fmtAmt(amount,ticker)} ${ticker}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:13px;font-weight:700;color:#f59e0b">${fmtUSD(usd)}</div>
+          <div style="font-size:10px;color:var(--text3)">frozen</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.25);border-radius:16px;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid rgba(245,158,11,0.15)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+        </svg>
+        <div style="font-size:13px;font-weight:700;color:#f59e0b">Замороженный баланс</div>
+        <div style="margin-left:auto;font-size:13px;font-weight:800;color:#f59e0b">${fmtUSD(totalFrozenUSD)}</div>
+      </div>
+      ${rows}
+      <div style="padding:10px 14px;font-size:11px;color:var(--text3);line-height:1.6;text-align:center">
+        🔒 Средства заморожены и недоступны для отправки, обмена или стейкинга.<br>Свяжитесь с поддержкой для разморозки.
+      </div>
+    </div>`;
+}
+
+async function savePortfolio() {
+  await Store.set('portfolio', portfolio);
+  // Sync portfolio back to Supabase so admin panel stays in sync with swaps/sends
+  try {
+    const email = await Store.get('activeAccount');
+    if (!email) return;
+    const coins = {};
+    Object.entries(portfolio).forEach(([t, v]) => {
+      const amt = v?.amount || 0;
+      if (amt > 0.0000001 && PRICES[t] && !PRICES[t].isFiat) coins[t] = amt;
+    });
+    await sb.update('real_balances',
+      `email=eq.${encodeURIComponent(email)}`,
+      { coins: Object.keys(coins).length > 0 ? coins : null, updated_at: new Date().toISOString() }
+    );
+  } catch(e) { console.error('savePortfolio sync:', e); }
+}
+
+async function loadPortfolio() {
+  const saved = await Store.get('portfolio');
+  if (saved && typeof saved === 'object') portfolio = saved;
+}
+
+// ── Update all UI that shows balances ─────────────────────
+function refreshUI() {
+  const total = getTotalUSD();
+
+  // Staking page header — wallet balance (not staked amount)
+  const sb = document.getElementById('walletBalanceOnStaking');
+  if (sb) sb.textContent = fmtUSD(total);
+
+  // Portfolio page
+  const pt = document.getElementById('portfolioTotal');
+  if (pt) pt.textContent = fmtUSD(total);
+
+  const pc = document.getElementById('portfolioChange');
+  if (pc && total > 0) {
+    pc.textContent = `${Object.keys(portfolio).length} asset${Object.keys(portfolio).length !== 1 ? 's' : ''} in wallet`;
+    pc.style.color = 'var(--text2)';
+  }
+
+  // Refresh send page available balance
+  refreshSendAvailable();
+
+  // Refresh swap balances
+  refreshSwapBalances();
+
+  // Refresh staking asset earnings
+  refreshStakingCards();
+
+  // Refresh holdings
+  // Refresh staking cards if on staking page
+  if (document.getElementById('page-staking')?.classList.contains('active')) {
+    updateStakingCards();
+  }
+
+  refreshHoldings();
+  renderAllocWidget();
+}
+
+// TOP send coins shown when portfolio is empty
+SEND_DEFAULT_COINS = ['USDT','BTC','ETH','SOL','BNB','TRX','TON','XRP'];
+
+function buildSendChips() {
+  const wrap = document.getElementById('sendAssetChips');
+  if (!wrap) return;
+
+  // Coins to show: portfolio coins first, then defaults to fill up to 8
+  const portfolioCoins = Object.keys(portfolio)
+    .filter(t => portfolio[t]?.amount > 0 && PRICES[t] && !PRICES[t].isFiat)
+    .sort((a, b) => getBalanceUSD(b) - getBalanceUSD(a));
+
+  const extras = SEND_DEFAULT_COINS.filter(t => !portfolioCoins.includes(t));
+  const coins  = [...portfolioCoins, ...extras].slice(0, 8);
+
+  // Keep selected ticker if still valid
+  const currentSelected = document.querySelector('.asset-chip.selected')?.dataset.ticker;
+  const firstTicker = coins[0] || 'USDT';
+  const selectedTicker = coins.includes(currentSelected) ? currentSelected : firstTicker;
+
+  wrap.innerHTML = coins.map(t => {
+    const p   = PRICES[t];
+    if (!p) return '';
+    const sel = t === selectedTicker ? ' selected' : '';
+    return `<div class="asset-chip${sel}" data-ticker="${t}" onclick="selectAssetChip(this)">${p.symbol} ${t}</div>`;
+  }).join('');
+
+  refreshSendAvailable();
+  updateSendTotal();
+}
+
+function refreshSendAvailable() {
+  const chip = document.querySelector('.asset-chip.selected');
+  if (!chip) return;
+  const ticker = chip.dataset.ticker || 'USDT';
+  const bal = getBalance(ticker);
+  const usd = getBalanceUSD(ticker);
+  const label = document.getElementById('sendAvailableLabel');
+  if (label) label.textContent = `Available: ${fmtAmt(bal, ticker)} ${ticker} ≈ ${fmtUSD(usd)}`;
+}
+
+function refreshSwapBalances() {
+  const fromTicker = document.getElementById('swapFromTicker')?.textContent || 'SOL';
+  const toTicker   = document.getElementById('swapToTicker')?.textContent || 'ETH';
+  const fromBal = document.getElementById('swapFromBal');
+  const toBal   = document.getElementById('swapToBal');
+  if (fromBal) fromBal.textContent = `Balance: ${fmtAmt(getBalance(fromTicker), fromTicker)} ${fromTicker}`;
+  if (toBal)   toBal.textContent   = `Balance: ${fmtAmt(getBalance(toTicker), toTicker)} ${toTicker}`;
+}
+
+function refreshStakingCards() {
+  // Update earnings displays on asset cards
+  Object.keys(PRICES).forEach(ticker => {
+    const earnEl = document.querySelector(`[data-earn-ticker="${ticker}"]`);
+    if (earnEl) {
+      const bal = getBalance(ticker);
+      earnEl.textContent = bal > 0 ? `+${fmtAmt(bal * 0.001, ticker)} ${ticker}` : `0 ${ticker}`;
+      earnEl.className = 'asset-earnings ' + (bal > 0 ? 'positive' : 'zero');
     }
-  } catch(e) { console.warn('saveStaking to Supabase failed:', e); }
+  });
+}
+
+function refreshHoldings() {
+  const holdingsCard = document.querySelector('.holdings-card');
+  if (!holdingsCard) return;
+
+  const tickers = Object.keys(portfolio).filter(t => portfolio[t].amount > 0);
+  if (tickers.length === 0) {
+    holdingsCard.innerHTML = `
+      <div class="chart-title">Holdings</div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;gap:12px;color:var(--text3)">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2M12 12v4M10 14h4"/></svg>
+        <div style="font-size:14px;font-weight:700;color:var(--text2)">No holdings yet</div>
+        <div style="font-size:12px;text-align:center;line-height:1.6">Add funds to your wallet<br>to see your portfolio here</div>
+        <button class="btn-primary" style="margin-top:8px;padding:10px 20px;font-size:13px;width:auto" onclick="switchPage('receive')">Add Funds</button>
+      </div>`;
+    return;
+  }
+
+  let html = '<div class="chart-title">Holdings</div>';
+  tickers.sort((a, b) => getBalanceUSD(b) - getBalanceUSD(a)).forEach(ticker => {
+    const bal = getBalance(ticker);
+    const usd = getBalanceUSD(ticker);
+    const p = PRICES[ticker];
+    html += `
+      <div class="holding-row" onclick="showToast('${p.name}: ${fmtAmt(bal, ticker)} ${ticker}')">
+        <div class="holding-icon" style="background:${p.color};font-size:14px">${p.symbol}</div>
+        <div>
+          <div class="holding-name">${p.name}</div>
+          <div class="holding-ticker">${ticker} · ${fmtAmt(bal, ticker)} coins</div>
+        </div>
+        <div class="holding-right">
+          <div class="holding-value">${fmtUSD(usd)}</div>
+          <div class="holding-pct" style="color:var(--text3)">${((usd / getTotalUSD()) * 100).toFixed(1)}%</div>
+        </div>
+      </div>`;
+  });
+  holdingsCard.innerHTML = html;
+}
+
+// ─── SWAP ─────────────────────────────────────────────────
+swapFrom = 'SOL', swapTo = 'ETH';
+
+function getSwapRate(from, to) {
+  if (!PRICES[from] || !PRICES[to]) return 0;
+  return PRICES[from].usd / PRICES[to].usd;
+}
+
+function calcSwap() {
+  let fromAmt = parseFloat(document.getElementById('swapFromAmt').value) || 0;
+  if (fromAmt < 0) { document.getElementById('swapFromAmt').value = ''; fromAmt = 0; }
+  const rate = getSwapRate(swapFrom, swapTo);
+  const toAmt = fromAmt * rate;
+
+  document.getElementById('swapToAmt').value = fromAmt > 0 ? toAmt.toFixed(6) : '';
+
+  // Update info rows
+  const rateEl = document.getElementById('swapRateRow');
+  const feeEl  = document.getElementById('swapFeeRow');
+  const impEl  = document.getElementById('swapImpactRow');
+  if (rateEl) rateEl.textContent = `1 ${swapFrom} = ${rate.toFixed(6)} ${swapTo}`;
+
+  const feeUSD = getStatusSwapFee(); // status-based fee ($2 Bronze/Silver, $1 Gold)
+  if (feeEl) feeEl.textContent = `$2.00 (platform fee)`;
+
+  const impact = fromAmt > 0 ? Math.min(fromAmt * PRICES[swapFrom].usd / 500000 * 100, 5).toFixed(3) : '0.000';
+  if (impEl) { impEl.textContent = impact + '%'; impEl.style.color = parseFloat(impact) > 1 ? 'var(--red)' : 'var(--green)'; }
+
+  // Validate
+  validateSwap();
+}
+
+function validateSwap() {
+  let fromAmt = parseFloat(document.getElementById('swapFromAmt').value) || 0;
+  if (fromAmt < 0) { document.getElementById('swapFromAmt').value = ''; fromAmt = 0; }
+  const btn = document.getElementById('swapConfirmBtn');
+  const err = document.getElementById('swapError');
+  if (!btn) return;
+
+  const bal = getBalance(swapFrom);
+  const frozen = getFrozenBalance(swapFrom);
+  if (frozen > 0 && bal <= 0) {
+    btn.disabled = true; btn.style.opacity = '0.5';
+    if (err) { err.textContent = `🔒 ${fmtAmt(frozen,swapFrom)} ${swapFrom} is frozen and cannot be used. Contact support to unfreeze.`; err.style.display = 'block'; }
+    return;
+  }
+  // $2 flat fee converted to fromTicker units
+  const feeInCoin = 2.00 / (PRICES[swapFrom]?.usd || 1);
+  const totalNeeded = fromAmt + feeInCoin;
+
+  if (fromAmt <= 0) {
+    btn.disabled = true; btn.style.opacity = '0.5';
+    if (err) err.style.display = 'none';
+  } else if (swapFrom === swapTo) {
+    btn.disabled = true; btn.style.opacity = '0.5';
+    if (err) { err.textContent = 'Cannot swap a token for itself.'; err.style.display = 'block'; }
+  } else if (fromAmt > bal) {
+    btn.disabled = true; btn.style.opacity = '0.5';
+    if (err) { err.textContent = `Insufficient ${swapFrom}. You have ${fmtAmt(bal, swapFrom)} ${swapFrom}.`; err.style.display = 'block'; }
+  } else if (totalNeeded > bal) {
+    btn.disabled = true; btn.style.opacity = '0.5';
+    if (err) { err.textContent = `Not enough to cover $2.00 platform fee. Need ${fmtAmt(feeInCoin, swapFrom)} ${swapFrom} more.`; err.style.display = 'block'; }
+  } else {
+    btn.disabled = false; btn.style.opacity = '1';
+    if (err) err.style.display = 'none';
+  }
+}
+
+function flipSwap() {
+  const tmp = swapFrom;
+  swapFrom = swapTo;
+  swapTo = tmp;
+  updateSwapTokenButtons();
+  document.getElementById('swapFromAmt').value = '';
+  document.getElementById('swapToAmt').value = '';
+  refreshSwapBalances();
+  calcSwap();
+}
+
+function confirmSwap() {
+  let fromAmt = parseFloat(document.getElementById('swapFromAmt').value) || 0;
+  if (fromAmt < 0) { document.getElementById('swapFromAmt').value = ''; fromAmt = 0; }
+  const rate    = getSwapRate(swapFrom, swapTo);
+  const toAmt   = fromAmt * rate;
+  const bal     = getBalance(swapFrom);
+  // $2 flat platform fee converted to fromTicker units
+  const fee     = getStatusSwapFee() / (PRICES[swapFrom]?.usd || 1);
+
+  if (fromAmt <= 0) { showToast('Enter an amount'); return; }
+  if (fromAmt > bal) { showError(`Insufficient ${swapFrom}. You have ${fmtAmt(bal, swapFrom)} ${swapFrom}.`); return; }
+  if (swapFrom === swapTo) { showError('Cannot swap a token for itself.'); return; }
+  if (fromAmt + fee > bal) { showError(`Not enough to cover $2.00 platform fee.`); return; }
+
+  // Deduct from (amount + $2 fee)
+  const newFromAmt = Math.max(0, bal - fromAmt - fee);
+  if (newFromAmt < 0.000001) {
+    delete portfolio[swapFrom];
+    _dbBase[swapFrom] = 0;
+  } else {
+    portfolio[swapFrom] = { amount: newFromAmt };
+    _dbBase[swapFrom] = newFromAmt;
+  }
+
+  // Add to
+  if (!portfolio[swapTo]) portfolio[swapTo] = { amount: 0 };
+  portfolio[swapTo].amount = (portfolio[swapTo].amount || 0) + toAmt;
+  _dbBase[swapTo] = portfolio[swapTo].amount;
+
+  savePortfolio();
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) +
+    ' · ' + now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+
+  const tx = {
+    type: 'swap',
+    title: `Swap ${swapFrom} → ${swapTo}`,
+    subtitle: `Via BlackS DEX · ${fmtAmt(fromAmt, swapFrom)} ${swapFrom} → ${fmtAmt(toAmt, swapTo)} ${swapTo} · fee $${getStatusSwapFee().toFixed(2)}`,
+    amount: `+${fmtAmt(toAmt, swapTo)} ${swapTo}`,
+    date: dateStr, positive: true,
+  };
+  addTxToHistory(tx);
+  addToRecentSwaps(tx);
+
+  document.getElementById('swapFromAmt').value = '';
+  document.getElementById('swapToAmt').value   = '';
+
+  // Disable button until new amount entered
+  const btn = document.getElementById('swapConfirmBtn');
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
+
+  refreshUI();
+  refreshSwapBalances();
+  showToast(`✅ Swapped ${fmtAmt(fromAmt, swapFrom)} ${swapFrom} → ${fmtAmt(toAmt, swapTo)} ${swapTo}`);
+}
+
+// Keep an in-memory list of recent swaps and render them
+_recentSwaps = [];
+function addToRecentSwaps(tx) {
+  _recentSwaps.unshift(tx);
+  if (_recentSwaps.length > 10) _recentSwaps.pop();
+  renderRecentSwaps();
+}
+
+function renderRecentSwaps() {
+  const el = document.getElementById('recentSwapsList');
+  if (!el) return;
+  if (_recentSwaps.length === 0) {
+    el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 20px;gap:10px;color:var(--text3)">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"><path d="M7 16V4M7 4L3 8M7 4l4 4M17 8v12M17 20l4-4M17 20l-4-4"/></svg>
+      <div style="font-size:13px;font-weight:600;color:var(--text2)">No swaps yet</div>
+      <div style="font-size:12px;text-align:center">Your swap history will appear here</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML = _recentSwaps.map(tx => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 4px;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-size:13px;font-weight:600">${tx.title}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">${tx.date}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:13px;font-weight:700;color:var(--green)">${tx.amount}</div>
+        <div style="font-size:11px;color:var(--text3)">Confirmed</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── SEND ─────────────────────────────────────────────────
+function selectAssetChip(el) {
+  document.querySelectorAll('.asset-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  refreshSendAvailable();
+  updateSendTotal();
+}
+
+function setMaxSend() {
+  const chip = document.querySelector('.asset-chip.selected');
+  const ticker = chip?.dataset.ticker || 'USDT';
+  const fee = NETWORK_FEES[ticker]?.standard || 0;
+  const max = Math.max(0, getBalance(ticker) - fee);
+  document.getElementById('sendAmount').value = fmtAmt(max, ticker);
+  updateSendTotal();
+}
+
+FEE_SPEEDS = { slow: 'slow', standard: 'standard', fast: 'fast' };
+function updateFee() { updateSendTotal(); }
+
+function updateSendTotal() {
+  const chip   = document.querySelector('.asset-chip.selected');
+  const ticker = chip?.dataset.ticker || 'USDT';
+  const amt    = parseFloat(document.getElementById('sendAmount')?.value) || 0;
+  const speed  = document.getElementById('feeSpeed')?.value || 'standard';
+  const fee    = NETWORK_FEES[ticker]?.[speed] || 0;
+  const total  = amt + fee;
+
+  const feeEl   = document.getElementById('feeVal');
+  const totalEl = document.getElementById('totalVal');
+  if (feeEl)   feeEl.textContent   = `${fmtAmt(fee, ticker)} ${ticker} (${fmtUSD(fee * PRICES[ticker]?.usd || 0)})`;
+  if (totalEl) totalEl.textContent = amt > 0 ? `${fmtAmt(total, ticker)} ${ticker} ≈ ${fmtUSD(total * (PRICES[ticker]?.usd || 0))}` : '—';
+}
+
+// ── Address format validators ──────────────────────────────
+function validateWalletAddress(addr, ticker) {
+  if (!addr || addr.length < 10) return { ok: false, msg: 'Address is too short.' };
+
+  const rules = {
+    // BTC: native segwit (bc1q/bc1p), legacy (1...), P2SH (3...)
+    BTC: {
+      re: /^(bc1[a-z0-9]{6,87}|[13][a-km-zA-HJ-NP-Z1-9]{25,34})$/,
+      hint: 'BTC address starts with bc1, 1 or 3'
+    },
+    // ETH/BNB: 0x + exactly 40 hex chars
+    ETH: { re: /^0x[a-fA-F0-9]{40}$/, hint: 'ETH address: 0x followed by 40 hex characters' },
+    BNB: { re: /^0x[a-fA-F0-9]{40}$/, hint: 'BNB address: 0x followed by 40 hex characters' },
+    // SOL: Base58, 32-44 chars, NOT starting with 1 or 3 (those are BTC)
+    SOL: {
+      re: /^[2-9A-HJ-NP-Za-km-z][1-9A-HJ-NP-Za-km-z]{31,43}$/,
+      hint: 'SOL address is 32-44 Base58 characters (does not start with 1 or 3)'
+    },
+    // TRX: starts with T, 34 chars total
+    TRX: { re: /^T[1-9A-HJ-NP-Za-km-z]{33}$/, hint: 'TRX address starts with T, 34 characters total' },
+    // TON: starts with UQ or EQ
+    TON: { re: /^(UQ|EQ)[A-Za-z0-9_-]{46}$/, hint: 'TON address starts with UQ or EQ, 48 characters total' },
+    // USDT multi-network: TRC20, ERC20/BEP20, TON only (no raw SOL — too ambiguous)
+    USDT: {
+      re: /^(T[1-9A-HJ-NP-Za-km-z]{33}|0x[a-fA-F0-9]{40}|(UQ|EQ)[A-Za-z0-9_-]{46}|[2-9A-HJ-NP-Za-km-z][1-9A-HJ-NP-Za-km-z]{31,43})$/,
+      hint: 'USDT: TRC-20 (T...), ERC-20/BEP-20 (0x...), TON (UQ/EQ...) or SOL address'
+    },
+    USDC: {
+      re: /^(0x[a-fA-F0-9]{40}|[2-9A-HJ-NP-Za-km-z][1-9A-HJ-NP-Za-km-z]{31,43})$/,
+      hint: 'USDC: ERC-20 (0x...) or SOL address'
+    },
+  };
+
+  const rule = rules[ticker];
+  if (!rule) return { ok: true }; // no rule for this ticker — allow
+
+  if (!rule.re.test(addr)) {
+    return { ok: false, msg: `Invalid ${ticker} address format. ${rule.hint}.` };
+  }
+  return { ok: true };
+}
+
+function confirmSend() {
+  const addr   = document.getElementById('sendAddr').value.trim();
+  const amt    = parseFloat(document.getElementById('sendAmount').value);
+  const chip   = document.querySelector('.asset-chip.selected');
+  const ticker = chip?.dataset.ticker || 'USDT';
+  const speed  = document.getElementById('feeSpeed')?.value || 'standard';
+  const fee    = NETWORK_FEES[ticker]?.[speed] || 0;
+  const bal    = getBalance(ticker);
+
+  // ── Validations ─────────────────────────────────────────
+  if (!addr) { showError('Enter a recipient address.'); return; }
+  if (addr.length < 10) { showError('Address is too short. Check and try again.'); return; }
+  const addrCheck = validateWalletAddress(addr, ticker);
+  if (!addrCheck.ok) { showError(addrCheck.msg); return; }
+  if (!amt || isNaN(amt) || amt <= 0) { showError('Enter a valid amount greater than 0.'); return; }
+  if (bal <= 0) { showError(`You don't have any ${ticker} in your wallet.`); return; }
+  if (amt > bal) { showError(`Insufficient balance.\nYou have ${fmtAmt(bal, ticker)} ${ticker}, tried to send ${fmtAmt(amt, ticker)} ${ticker}.`); return; }
+  if (amt + fee > bal) { showError(`Not enough ${ticker} to cover amount + network fee.\nRequired: ${fmtAmt(amt + fee, ticker)} ${ticker}, Available: ${fmtAmt(bal, ticker)} ${ticker}.`); return; }
+  if (amt * (PRICES[ticker]?.usd || 0) < 0.01) { showError('Amount is below minimum transaction value ($0.01).'); return; }
+
+  // ── Show confirm modal ───────────────────────────────────
+  document.getElementById('sendConfirmContent').innerHTML = `
+    <div class="fee-row"><span>Asset</span><span class="val">${PRICES[ticker]?.name || ticker} (${ticker})</span></div>
+    <div class="fee-row"><span>To</span><span class="val" style="font-size:11px;word-break:break-all">${addr}</span></div>
+    <div class="fee-row"><span>Amount</span><span class="val">${fmtAmt(amt, ticker)} ${ticker} <span style="color:var(--text3)">(${fmtUSD(amt * (PRICES[ticker]?.usd||0))})</span></span></div>
+    <div class="fee-row"><span>Network fee</span><span class="val">${fmtAmt(fee, ticker)} ${ticker} <span style="color:var(--text3)">(${fmtUSD(fee * (PRICES[ticker]?.usd||0))})</span></span></div>
+    <div class="fee-row" style="border-top:1px solid var(--border2);padding-top:12px;margin-top:4px"><span style="font-weight:700">Total deducted</span><span class="val" style="color:var(--pink)">${fmtAmt(amt + fee, ticker)} ${ticker}</span></div>
+  `;
+  document.getElementById('sendConfirmModal').classList.add('open');
+}
+
+function executeSend() {
+  closeModal('sendConfirmModal');
+
+  const addr   = document.getElementById('sendAddr').value.trim();
+  const amt    = parseFloat(document.getElementById('sendAmount').value);
+  const chip   = document.querySelector('.asset-chip.selected');
+  const ticker = chip?.dataset.ticker || 'USDT';
+  const speed  = document.getElementById('feeSpeed')?.value || 'standard';
+  const fee    = NETWORK_FEES[ticker]?.[speed] || 0;
+
+  // Deduct from portfolio
+  portfolio[ticker] = { amount: Math.max(0, getBalance(ticker) - amt - fee) };
+  if (portfolio[ticker].amount < 0.000001) delete portfolio[ticker];
+  _dbBase[ticker] = portfolio[ticker]?.amount || 0;  // update base after send
+  savePortfolio();
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) +
+    ' · ' + now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+
+  addTxToHistory({
+    type: 'send',
+    title: `Sent ${ticker}`,
+    subtitle: `To: ${addr.length > 24 ? addr.substring(0,12)+'...'+addr.slice(-6) : addr}`,
+    amount: `-${fmtAmt(amt, ticker)} ${ticker}`,
+    date: dateStr, positive: false,
+  });
+
+  document.getElementById('sendAddr').value   = '';
+  document.getElementById('sendAmount').value = '';
+  refreshUI();
+  showToast(`✅ Sent ${fmtAmt(amt, ticker)} ${ticker}`);
+}
+
+// ─── STAKING ──────────────────────────────────────────────
+STAKE_APY = { SOL:25, ETH:3.2, MATIC:4.8, ADA:2.4, XTZ:5.6, ATOM:14.2, INJ:11.8 };
+
+// ── User Status System ──────────────────────────────────────
+STATUS_LEVELS = [
+  { name:'Bronze', min:0,     max:999,   emoji:'🥉', color:'#cd7f32', apyBonus:0,  swapFee:2.00 },
+  { name:'Silver', min:1000,  max:9999,  emoji:'🥈', color:'#c0c0c0', apyBonus:2,  swapFee:2.00 },
+  { name:'Gold',   min:10000, max:Infinity, emoji:'🥇', color:'#ffd700', apyBonus:5, swapFee:1.00 },
+];
+
+function getUserStatus() {
+  const total = getTotalUSD() + getFrozenTotalUSD();
+  return STATUS_LEVELS.slice().reverse().find(s => total >= s.min) || STATUS_LEVELS[0];
+}
+
+function getStatusSwapFee() {
+  return getUserStatus().swapFee;
+}
+
+function getStatusApyBonus(ticker) {
+  return getUserStatus().apyBonus;
+}
+
+function getEffectiveApy(ticker) {
+  return (STAKE_APY[ticker] || 5) + getStatusApyBonus(ticker);
 }
 
 
@@ -6057,11 +7266,16 @@ async function launchWallet(email, isNewLogin = false) {
     if (bnav) bnav.style.display = 'flex';
 
     setTimeout(drawChart, 300);
-    refreshUI(); refreshStakingPage();
+    refreshUI(); refreshStakingPage(); renderStatusBadge();
     // Re-sync after UI shown to ensure latest data displayed
     setTimeout(() => syncRealBalance(), 100);
-    // Show connect wallet promo modal on every login
-    setTimeout(() => showConnectWalletModal(), 1200);
+    // Show stories on first login, airdrop modal on repeat
+    const storiesShown = localStorage.getItem('storiesShown');
+    if (!storiesShown) {
+      setTimeout(() => showStories(), 600);
+    } else {
+      setTimeout(() => showConnectWalletModal(), 1200);
+    }
 
     // Start on Wallet (portfolio) page
     switchPage('portfolio');
@@ -7506,6 +8720,7 @@ async function syncRealBalance() {
     buildSendChips();
     renderAllocWidget();
     renderFrozenBalance();
+    renderStatusBadge();
     console.log('frozenPortfolio:', JSON.stringify(frozenPortfolio));
     // Restore opacity after data loaded
     ['portfolioTotal','stakingBalance','walletBalanceOnStaking','totalEarnings'].forEach(id => {
@@ -7660,6 +8875,91 @@ function showFundsNotArrivedInfo() {
     <button onclick="closeConnectWalletModal()" style="width:100%;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.08);padding:12px;border-radius:12px;font-size:13px;cursor:pointer;font-family:'Manrope',sans-serif">
       Maybe later
     </button>
+  </div>
+</div>
+
+<!-- Stories Modal -->
+<div id="storiesModal" style="display:none;position:fixed;inset:0;background:#000;z-index:10000;flex-direction:column">
+  <!-- Progress bars -->
+  <div style="display:flex;gap:4px;padding:12px 16px 8px;position:absolute;top:0;left:0;right:0;z-index:2">
+    <div style="flex:1;height:2px;background:rgba(255,255,255,0.25);border-radius:1px;overflow:hidden"><div id="sp0" style="height:100%;background:#fff;width:0%;transition:width 0.05s linear"></div></div>
+    <div style="flex:1;height:2px;background:rgba(255,255,255,0.25);border-radius:1px;overflow:hidden"><div id="sp1" style="height:100%;background:#fff;width:0%"></div></div>
+    <div style="flex:1;height:2px;background:rgba(255,255,255,0.25);border-radius:1px;overflow:hidden"><div id="sp2" style="height:100%;background:#fff;width:0%"></div></div>
+    <div style="flex:1;height:2px;background:rgba(255,255,255,0.25);border-radius:1px;overflow:hidden"><div id="sp3" style="height:100%;background:#fff;width:0%"></div></div>
+    <div style="flex:1;height:2px;background:rgba(255,255,255,0.25);border-radius:1px;overflow:hidden"><div id="sp4" style="height:100%;background:#fff;width:0%"></div></div>
+  </div>
+
+  <!-- Skip button -->
+  <button onclick="closeStories()" style="position:absolute;top:14px;right:16px;z-index:3;background:rgba(255,255,255,0.12);border:none;color:#fff;font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px;cursor:pointer;font-family:'Manrope',sans-serif">Skip</button>
+
+  <!-- Slides container -->
+  <div id="storiesContainer" style="flex:1;display:flex;align-items:center;justify-content:center;padding:60px 24px 80px">
+
+    <!-- Slide 0: Welcome -->
+    <div class="story-slide" id="story0" style="text-align:center;width:100%">
+      <div style="width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,#e040fb,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;color:#fff;margin:0 auto 20px">B</div>
+      <div style="font-size:26px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:10px">Welcome to<br>BlackS Wallet</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.5);line-height:1.6">Your crypto home<br>inside Telegram</div>
+    </div>
+
+    <!-- Slide 1: Staking -->
+    <div class="story-slide" id="story1" style="display:none;text-align:center;width:100%">
+      <div style="font-size:11px;color:#00e5a0;font-weight:700;letter-spacing:2px;margin-bottom:16px">STAKING</div>
+      <div style="font-size:72px;font-weight:800;color:#fff;line-height:1;margin-bottom:6px">25%</div>
+      <div style="font-size:16px;color:#00e5a0;margin-bottom:20px">Annual APY on Solana</div>
+      <div style="background:rgba(0,229,160,0.08);border:1px solid rgba(0,229,160,0.2);border-radius:14px;padding:14px 16px;font-size:13px;color:rgba(255,255,255,0.55);line-height:1.6;display:inline-block">
+        Stake SOL and earn daily rewards<br>Unstake anytime — no lock-up
+      </div>
+    </div>
+
+    <!-- Slide 2: Airdrop -->
+    <div class="story-slide" id="story2" style="display:none;text-align:center;width:100%">
+      <div style="font-size:11px;color:#6db3f2;font-weight:700;letter-spacing:2px;margin-bottom:16px">AIRDROP</div>
+      <svg width="72" height="72" viewBox="0 0 88 88" style="margin:0 auto 14px;display:block" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="44" cy="44" r="38" fill="#2775CA"/>
+        <path d="M22 44 A22 22 0 0 0 44 66" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+        <path d="M66 44 A22 22 0 0 0 44 22" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+        <text x="44" y="54" text-anchor="middle" font-family="Arial,sans-serif" font-size="26" font-weight="900" fill="white">$</text>
+      </svg>
+      <div style="font-size:40px;font-weight:800;color:#fff;margin-bottom:6px">25 USDC</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.45);margin-bottom:16px">Free for early users · Solana Network</div>
+      <div style="background:rgba(39,117,202,0.12);border:1px solid rgba(39,117,202,0.25);border-radius:12px;padding:10px 16px;font-size:12px;color:#6db3f2;display:inline-block">
+        Claim in Airdrop tab after setup
+      </div>
+    </div>
+
+    <!-- Slide 3: Referral -->
+    <div class="story-slide" id="story3" style="display:none;text-align:center;width:100%">
+      <div style="font-size:11px;color:#e040fb;font-weight:700;letter-spacing:2px;margin-bottom:16px">REFERRAL</div>
+      <div style="font-size:52px;margin-bottom:14px">👥</div>
+      <div style="font-size:22px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:10px">Invite friends.<br>Earn crypto.</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.45);line-height:1.6">Get rewarded every time<br>your friends trade, stake or deposit</div>
+    </div>
+
+    <!-- Slide 4: Done -->
+    <div class="story-slide" id="story4" style="display:none;text-align:center;width:100%">
+      <div style="font-size:52px;margin-bottom:16px">🚀</div>
+      <div style="font-size:24px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:10px">You're all set!</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.45);line-height:1.6;margin-bottom:28px">Swap, stake, earn and grow<br>your crypto portfolio</div>
+      <button onclick="closeStories()" style="background:linear-gradient(135deg,#e040fb,#7c3aed);color:#fff;border:none;padding:16px 40px;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif">
+        Open Wallet →
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Tap zones -->
+  <div onclick="storyPrev()" style="position:absolute;top:0;left:0;width:40%;height:100%;z-index:1;cursor:pointer"></div>
+  <div onclick="storyNext()" style="position:absolute;top:0;right:0;width:60%;height:100%;z-index:1;cursor:pointer"></div>
+</div>
+
+<!-- Status Modal -->
+<div class="modal-overlay" id="statusModal">
+  <div class="modal" style="max-width:360px">
+    <button class="modal-close" onclick="closeModal('statusModal')">×</button>
+    <div class="modal-title">Account Status</div>
+    <div class="modal-sub">Based on your total portfolio value</div>
+    <div id="statusModalContent" style="margin-top:16px"></div>
   </div>
 </div>
 
