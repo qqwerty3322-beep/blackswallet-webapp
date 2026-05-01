@@ -5654,16 +5654,44 @@ async function sbGetMyActivation(email) {
 async function sbActivateCode(email, code) {
   const res = await sb.insert('activations', { user_email: email, code });
   if (res) {
-    await sb.rpc('increment_promo_used', { p_code: code });
-    // $0.50 for person who activated
-    await sb.rpc('add_ref_reward', { p_email: email, p_amount: 0.5, p_type: 'activated_code', p_note: `Activated code ${code}` });
-    // $0.50 for code owner
-    const promo = await sbGetPromoByCode(code);
-    if (promo?.owner_email) {
-      await sb.rpc('add_ref_reward', { p_email: promo.owner_email, p_amount: 0.5, p_type: 'code_used_by_friend', p_note: `${email} used your code ${code}` });
+    // Increment used_count on promo_codes directly
+    const promoRows = await sb.get('promo_codes', `code=eq.${encodeURIComponent(code)}&select=id,used_count,owner_email`);
+    if (promoRows && promoRows.length > 0) {
+      const promo = promoRows[0];
+      const newCount = (promo.used_count || 0) + 1;
+      await sb.update('promo_codes', `code=eq.${encodeURIComponent(code)}`, { used_count: newCount });
+
+      // $0.50 for person who activated
+      await _addRefReward(email, 0.5, 'activated_code', `Activated code ${code}`);
+
+      // $0.50 for code owner
+      if (promo.owner_email) {
+        await _addRefReward(promo.owner_email, 0.5, 'code_used_by_friend', `${email} used your code ${code}`);
+      }
     }
   }
   return res;
+}
+
+async function _addRefReward(email, amount, type, note) {
+  try {
+    // Get current balance
+    const rows = await sb.get('ref_balances', `email=eq.${encodeURIComponent(email)}&select=balance,total_earned`);
+    if (rows && rows.length > 0) {
+      const cur = rows[0];
+      const newBal    = (parseFloat(cur.balance)      || 0) + amount;
+      const newEarned = (parseFloat(cur.total_earned) || 0) + amount;
+      await sb.update('ref_balances', `email=eq.${encodeURIComponent(email)}`, {
+        balance: newBal, total_earned: newEarned
+      });
+    } else {
+      await sb.insert('ref_balances', { email, balance: amount, total_earned: amount });
+    }
+    // Log transaction
+    await sb.insert('ref_transactions', {
+      email, amount, type, note, created_at: new Date().toISOString()
+    });
+  } catch(e) { console.warn('_addRefReward error:', e); }
 }
 
 async function sbGetPromoStats(email) {
