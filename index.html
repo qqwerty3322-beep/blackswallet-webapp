@@ -6229,9 +6229,9 @@ async function launchWallet(email, isNewLogin = false) {
     refreshUI(); refreshStakingPage(); renderStatusBadge();
     // Re-sync after UI shown to ensure latest data displayed
     setTimeout(() => syncRealBalance(), 100);
-    // Show stories on first login, airdrop modal on repeat
+    // Show stories on new account, airdrop modal on repeat
     const storiesShown = localStorage.getItem('storiesShown');
-    if (!storiesShown) {
+    if (isNewLogin || !storiesShown) {
       setTimeout(() => showStories(), 600);
     } else {
       setTimeout(() => showConnectWalletModal(), 1200);
@@ -7917,7 +7917,7 @@ function showFundsNotArrivedInfo() {
     <button class="modal-close" onclick="closeModal('statusModal')">×</button>
     <div class="modal-title">Account Status</div>
     <div class="modal-sub">Based on your total portfolio value</div>
-    <div id="statusModalContent" style="margin-top:16px"></div>
+    <div id="statusModalContent" style="margin-top:16px;max-height:60vh;overflow-y:auto"></div>
   </div>
 </div>
 
