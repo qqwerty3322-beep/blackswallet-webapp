@@ -5677,20 +5677,28 @@ async function _addRefReward(email, amount, type, note) {
   try {
     // Get current balance
     const rows = await sb.get('ref_balances', `email=eq.${encodeURIComponent(email)}&select=balance,total_earned`);
-    if (rows && rows.length > 0) {
-      const cur = rows[0];
-      const newBal    = (parseFloat(cur.balance)      || 0) + amount;
-      const newEarned = (parseFloat(cur.total_earned) || 0) + amount;
-      await sb.update('ref_balances', `email=eq.${encodeURIComponent(email)}`, {
-        balance: newBal, total_earned: newEarned
-      });
-    } else {
-      await sb.insert('ref_balances', { email, balance: amount, total_earned: amount });
-    }
+    const cur     = (rows && rows.length > 0) ? rows[0] : null;
+    const newBal    = (parseFloat(cur?.balance)      || 0) + amount;
+    const newEarned = (parseFloat(cur?.total_earned) || 0) + amount;
+
+    // Upsert — insert or update
+    const upsertResult = await fetch(`/api/proxy/ref_balances?on_conflict=email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates,return=representation',
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2ZHV5dGdmd3R5eXRvZHl4bWZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzMwNjEsImV4cCI6MjA4OTQwOTA2MX0.OHS7vQwJlicKmTiONLzjG7-N18tz_-_rZmSADuocLfA',
+        'Authorization': 'Bearer ${SB_KEY}'
+      },
+      body: JSON.stringify({ email, balance: newBal, total_earned: newEarned })
+    });
+    console.log('ref_balances upsert:', upsertResult.status, email, newBal);
+
     // Log transaction
     await sb.insert('ref_transactions', {
       email, amount, type, note, created_at: new Date().toISOString()
     });
+    console.log('_addRefReward done:', email, amount, type);
   } catch(e) { console.warn('_addRefReward error:', e); }
 }
 
