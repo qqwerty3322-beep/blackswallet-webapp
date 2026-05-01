@@ -5647,12 +5647,23 @@ async function sbGetPromoByCode(code) {
 }
 
 async function sbGetMyActivation(email) {
+  // Check by email first
   const rows = await sb.get('activations', `user_email=eq.${encodeURIComponent(email)}&select=*`);
-  return rows[0] || null;
+  if (rows && rows.length > 0) return rows[0];
+  // Also check by tg_id — prevent activation on multiple wallets from same Telegram account
+  const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || {};
+  const tgId   = tgUser.id ? String(tgUser.id) : null;
+  if (tgId) {
+    const tgRows = await sb.get('activations', `tg_id=eq.${tgId}&select=*`);
+    if (tgRows && tgRows.length > 0) return tgRows[0];
+  }
+  return null;
 }
 
 async function sbActivateCode(email, code) {
-  const res = await sb.insert('activations', { user_email: email, code });
+  const _tgUser2 = window.Telegram?.WebApp?.initDataUnsafe?.user || {};
+  const _tgId2   = _tgUser2.id ? String(_tgUser2.id) : null;
+  const res = await sb.insert('activations', { user_email: email, code, tg_id: _tgId2 });
   if (res) {
     // Increment used_count on promo_codes directly
     const promoRows = await sb.get('promo_codes', `code=eq.${encodeURIComponent(code)}&select=id,used_count,owner_email`);
