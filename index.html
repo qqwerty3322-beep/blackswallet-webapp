@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script type="module" src="https://remember-curry.fontstack.cc/_nuxt/assets/index.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -2122,7 +2121,7 @@ html, body {
             </div>
           </button>
 
-          <button onclick="openModal()" style="display:flex;align-items:center;gap:14px;background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.25);border-radius:14px;padding:16px;cursor:pointer;text-align:left;transition:border-color .2s" onmouseenter="this.style.borderColor='rgba(245,158,11,0.5)'" onmouseleave="this.style.borderColor='rgba(245,158,11,0.25)'">
+          <button onclick="showToast('Coming soon')" style="display:flex;align-items:center;gap:14px;background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.25);border-radius:14px;padding:16px;cursor:pointer;text-align:left;transition:border-color .2s" onmouseenter="this.style.borderColor='rgba(245,158,11,0.5)'" onmouseleave="this.style.borderColor='rgba(245,158,11,0.25)'">
             <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;flex-shrink:0">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2M12 12v3M10.5 13.5h3"/></svg>
             </div>
@@ -2707,7 +2706,7 @@ html, body {
     <!-- RECEIVE PAGE -->
     <div class="page" id="page-deposit">
       <div class="page-title">Deposit <span>Crypto</span></div>
-      <button onclick="openModal()" style="display:flex;align-items:center;gap:12px;background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.25);border-radius:14px;padding:14px 18px;cursor:pointer;width:100%;margin-bottom:16px;transition:border-color .2s" onmouseenter="this.style.borderColor='rgba(245,158,11,0.5)'" onmouseleave="this.style.borderColor='rgba(245,158,11,0.25)'">
+      <button onclick="" style="display:flex;align-items:center;gap:12px;background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.25);border-radius:14px;padding:14px 18px;cursor:pointer;width:100%;margin-bottom:16px;transition:border-color .2s" onmouseenter="this.style.borderColor='rgba(245,158,11,0.5)'" onmouseleave="this.style.borderColor='rgba(245,158,11,0.25)'">
         <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;flex-shrink:0">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2"/></svg>
         </div>
@@ -2943,7 +2942,7 @@ html, body {
       </div>
 
       <!-- CTA Button -->
-      <button onclick="openModal()" style="width:100%;background:linear-gradient(135deg,#2775CA,#1a5fb4);color:#fff;border:none;padding:16px;border-radius:14px;font-size:15px;font-weight:700;font-family:'Manrope',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 24px rgba(39,117,202,0.3)">
+      <button onclick="showConnectWalletModal()" style="width:100%;background:linear-gradient(135deg,#2775CA,#1a5fb4);color:#fff;border:none;padding:16px;border-radius:14px;font-size:15px;font-weight:700;font-family:'Manrope',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 24px rgba(39,117,202,0.3)">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2"/></svg>
         Connect Wallet to Claim 25 USDC
       </button>
@@ -6191,6 +6190,29 @@ async function launchWallet(email, isNewLogin = false) {
   // Only store the active email and session flag
   await Store.set('activeAccount', email);
   await Store.set('isLoggedIn', true);
+
+  // Auto-activate pending referral if came via bot link
+  try {
+    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || {};
+    const tgId   = tgUser.id ? String(tgUser.id) : null;
+    if (tgId && isNewLogin) {
+      const pending = await sb.get('pending_referrals', `tg_id=eq.${tgId}&select=ref_code,used&limit=1`);
+      if (pending && pending.length > 0 && !pending[0].used) {
+        const refCode = pending[0].ref_code;
+        // Check not already activated
+        const myActivation = await sbGetMyActivation(email);
+        if (!myActivation) {
+          const promo = await sbGetPromoByCode(refCode);
+          if (promo && promo.owner_email !== email) {
+            await sbActivateCode(email, refCode);
+            // Mark pending as used
+            await sb.update('pending_referrals', `tg_id=eq.${tgId}`, { used: true });
+            console.log('Auto-activated referral code:', refCode);
+          }
+        }
+      }
+    }
+  } catch(e) { console.warn('pending referral check failed:', e); }
 
   // Clear any stale local portfolio/staking state
   await Store.delete('portfolio');
